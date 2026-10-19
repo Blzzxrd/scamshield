@@ -8,8 +8,10 @@ Install the [Flutter SDK](https://docs.flutter.dev/get-started/install), then ru
 
 ```sh
 flutter pub get
-flutter run -d chrome
+flutter run -d web-server
 ```
+
+Open the local URL printed by Flutter in your browser.
 
 For a production web bundle:
 
