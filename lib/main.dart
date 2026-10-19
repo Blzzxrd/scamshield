@@ -111,13 +111,13 @@ class _AppShellState extends State<AppShell> {
     }
   }
 
-  void _reviewMessage(String id, bool correct) {
+  int _reviewMessage(String id, bool correct) {
     final progress = _progress!;
-    if (progress.reviewedMessages.add(id)) {
-      if (correct) progress.xp += 15;
-      setState(() {});
-      _store.save(progress);
-    }
+    if (progress.reviewedMessages.contains(id)) return 0;
+    final earnedXp = progress.recordMessageResult(id, correct);
+    setState(() {});
+    _store.save(progress);
+    return earnedXp;
   }
 
   void _finishCall(bool safeChoice) {
@@ -150,7 +150,9 @@ class _AppShellState extends State<AppShell> {
         builder: (_) => MessagePage(
           message: message,
           alreadyReviewed: _progress!.reviewedMessages.contains(message.id),
-          onAnswered: (correct) => _reviewMessage(message.id, correct),
+          onAnswered: (correct) {
+            _reviewMessage(message.id, correct);
+          },
         ),
       ),
     );
@@ -172,7 +174,10 @@ class _AppShellState extends State<AppShell> {
     Navigator.push(
       context,
       MaterialPageRoute<void>(
-        builder: (_) => TextSimulationPage(onReviewMessage: _openMessage),
+        builder: (_) => TextSimulationPage(
+          reviewedMessages: _progress!.reviewedMessages,
+          onAnswered: (message, correct) => _reviewMessage(message.id, correct),
+        ),
       ),
     );
   }
@@ -191,7 +196,7 @@ class _AppShellState extends State<AppShell> {
           0 => _HomeView(
               progress: progress,
               onLearn: () => setState(() => _tab = 1),
-              onPractice: () => setState(() => _tab = 2),
+              onOpenTexts: _openTextSimulation,
               onOpenLesson: () => _openLesson(lessons.first),
             ),
           1 => _LearnView(progress: progress, onOpen: _openLesson),
@@ -388,17 +393,25 @@ class _HomeView extends StatelessWidget {
   const _HomeView({
     required this.progress,
     required this.onLearn,
-    required this.onPractice,
+    required this.onOpenTexts,
     required this.onOpenLesson,
   });
 
   final AppProgress progress;
   final VoidCallback onLearn;
-  final VoidCallback onPractice;
+  final VoidCallback onOpenTexts;
   final VoidCallback onOpenLesson;
 
   @override
   Widget build(BuildContext context) {
+    final textMessages =
+        practiceMessages.where((message) => message.channel == 'Text').toList();
+    final textReviewed = textMessages
+        .where((message) => progress.reviewedMessages.contains(message.id))
+        .length;
+    final textCorrect = textMessages
+        .where((message) => progress.correctMessages.contains(message.id))
+        .length;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -491,9 +504,38 @@ class _HomeView extends StatelessWidget {
                       '${progress.reviewedMessages.length}/${practiceMessages.length}',
                   label: 'Messages reviewed',
                 ),
+                _StatCard(
+                  width: cardWidth,
+                  icon: Icons.sms_rounded,
+                  value: '$textCorrect/${textMessages.length}',
+                  label: 'Texts correct',
+                ),
               ],
             );
           },
+        ),
+        const SizedBox(height: 24),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(20),
+          decoration: pixelPanel(pixelGold),
+          child: Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 16,
+            runSpacing: 10,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('YOUR SCOREBOARD', style: pixelHeading(17)),
+                  const SizedBox(height: 5),
+                  Text('$textCorrect of $textReviewed text checks correct'),
+                ],
+              ),
+              Text('${progress.xp} XP', style: pixelHeading(22)),
+            ],
+          ),
         ),
         const SizedBox(height: 32),
         _SectionHeading(
@@ -515,8 +557,8 @@ class _HomeView extends StatelessWidget {
           icon: Icons.sms_outlined,
           title: 'Test your instincts',
           subtitle: 'Sort simulated messages into scam or safe.',
-          button: 'Try practice',
-          onPressed: onPractice,
+          button: 'Try texts',
+          onPressed: onOpenTexts,
         ),
         const SizedBox(height: 14),
         TextButton.icon(

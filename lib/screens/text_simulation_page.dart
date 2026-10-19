@@ -9,10 +9,12 @@ import '../widgets/pixel_theme.dart';
 class TextSimulationPage extends StatefulWidget {
   const TextSimulationPage({
     super.key,
-    required this.onReviewMessage,
+    required this.reviewedMessages,
+    required this.onAnswered,
   });
 
-  final ValueChanged<PracticeMessage> onReviewMessage;
+  final Set<String> reviewedMessages;
+  final int Function(PracticeMessage message, bool correct) onAnswered;
 
   @override
   State<TextSimulationPage> createState() => _TextSimulationPageState();
@@ -27,6 +29,9 @@ class _TextSimulationPageState extends State<TextSimulationPage> {
 
   int _index = 0;
   bool _arriving = false;
+  bool? _answer;
+  int _earnedXp = 0;
+  bool _replayed = false;
   Timer? _arrivalTimer;
 
   @override
@@ -43,7 +48,21 @@ class _TextSimulationPageState extends State<TextSimulationPage> {
       setState(() {
         _index = (_index + 1) % _texts.length;
         _arriving = false;
+        _answer = null;
+        _earnedXp = 0;
+        _replayed = false;
       });
+    });
+  }
+
+  void _answerText(PracticeMessage message, bool isScam) {
+    if (_answer != null || _arriving) return;
+    final replayed = widget.reviewedMessages.contains(message.id);
+    final earnedXp = widget.onAnswered(message, isScam == message.isScam);
+    setState(() {
+      _answer = isScam;
+      _earnedXp = earnedXp;
+      _replayed = replayed;
     });
   }
 
@@ -51,6 +70,7 @@ class _TextSimulationPageState extends State<TextSimulationPage> {
   Widget build(BuildContext context) {
     final message = _texts[_index];
     final width = MediaQuery.sizeOf(context).width;
+    final correct = _answer == message.isScam;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Text imitation')),
@@ -82,24 +102,68 @@ class _TextSimulationPageState extends State<TextSimulationPage> {
                       total: _texts.length,
                     ),
                     const SizedBox(height: 25),
+                    Text('SCAM OR SAFE?', style: pixelHeading(19)),
+                    const SizedBox(height: 12),
                     Wrap(
                       alignment: WrapAlignment.center,
                       spacing: 12,
                       runSpacing: 12,
                       children: [
                         FilledButton.icon(
-                          onPressed: _arriving ? null : _showNextText,
-                          icon: const Icon(Icons.sms_outlined),
-                          label: const Text('Send next text'),
+                          onPressed: _arriving || _answer != null
+                              ? null
+                              : () => _answerText(message, true),
+                          icon: const Icon(Icons.warning_amber_rounded),
+                          label: const Text('This is a scam'),
                         ),
                         OutlinedButton.icon(
-                          onPressed: _arriving
+                          onPressed: _arriving || _answer != null
                               ? null
-                              : () => widget.onReviewMessage(message),
-                          icon: const Icon(Icons.search_rounded),
-                          label: const Text('Review this text'),
+                              : () => _answerText(message, false),
+                          icon: const Icon(Icons.check_circle_outline),
+                          label: const Text('This looks safe'),
                         ),
                       ],
+                    ),
+                    if (_answer != null) ...[
+                      const SizedBox(height: 18),
+                      Container(
+                        width: 390,
+                        padding: const EdgeInsets.all(17),
+                        decoration: pixelPanel(correct ? pixelMint : pixelGold),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              correct
+                                  ? 'NICE CATCH!'
+                                  : 'GOOD TRY — KEEP GOING!',
+                              style: pixelHeading(16),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              correct
+                                  ? message.explanation
+                                  : 'This one is ${message.isScam ? 'a scam' : 'legitimate'}. ${message.explanation} You can use that clue on the next text.',
+                              style: const TextStyle(fontSize: 15, height: 1.4),
+                            ),
+                            if (_earnedXp > 0) ...[
+                              const SizedBox(height: 10),
+                              Text('+$_earnedXp XP', style: pixelHeading(13)),
+                            ] else if (_replayed) ...[
+                              const SizedBox(height: 10),
+                              const Text(
+                                  'This text was already counted on Home.'),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ],
+                    const SizedBox(height: 18),
+                    OutlinedButton.icon(
+                      onPressed: _arriving ? null : _showNextText,
+                      icon: const Icon(Icons.sms_outlined),
+                      label: const Text('Send next text'),
                     ),
                     const SizedBox(height: 14),
                     const Text(

@@ -228,9 +228,10 @@ class _MessagePageState extends State<MessagePage> {
             const SizedBox(height: 24),
             _NoteCard(
               icon: correct ? Icons.check_circle_outline : Icons.info_outline,
-              title: correct ? 'Good call!' : 'Here’s what to notice',
-              text:
-                  '${widget.message.explanation}${correct && !widget.alreadyReviewed ? ' +15 XP' : ''}',
+              title: correct ? 'Nice catch!' : 'Good try!',
+              text: correct
+                  ? '${widget.message.explanation}${!widget.alreadyReviewed ? ' +15 XP' : ''}'
+                  : 'This one is ${widget.message.isScam ? 'a scam' : 'legitimate'}. ${widget.message.explanation} Use that clue next time.',
             ),
             const SizedBox(height: 20),
             FilledButton(
