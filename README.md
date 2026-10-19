@@ -1,6 +1,8 @@
 # ScamShield
 
-A small Flutter web prototype for learning how to spot scams. It has two short lessons, a simulated inbox, one scripted phone scenario, XP, and local progress. Everything is simulated; the messages contain no live links.
+A small Flutter web prototype for learning how to spot scams. It has two short lessons, a text-message phone preview, a simulated email inbox, one scripted phone scenario, XP, and local progress. Everything is simulated; the messages contain no live links.
+
+Open **Practice → Text imitation** to view fictional texts in a phone interface. **Send next text** cycles between the sample messages, and **Review this text** opens the existing scam-or-safe exercise. This is a UI draft: replies and real SMS delivery are not connected.
 
 The game-inspired artwork is drawn in Flutter. The bundled Silkscreen font is licensed under the [SIL Open Font License](assets/fonts/OFL.txt).
 

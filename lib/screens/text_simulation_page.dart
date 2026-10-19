@@ -1,0 +1,292 @@
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+
+import '../data/content.dart';
+import '../widgets/pixel_theme.dart';
+
+/// A phone-shaped preview for the text practice scenarios.
+class TextSimulationPage extends StatefulWidget {
+  const TextSimulationPage({
+    super.key,
+    required this.onReviewMessage,
+  });
+
+  final ValueChanged<PracticeMessage> onReviewMessage;
+
+  @override
+  State<TextSimulationPage> createState() => _TextSimulationPageState();
+}
+
+class _TextSimulationPageState extends State<TextSimulationPage> {
+  final List<PracticeMessage> _texts = practiceMessages
+      .where((message) => message.channel == 'Text')
+      .toList()
+      .reversed
+      .toList();
+
+  int _index = 0;
+  bool _arriving = false;
+  Timer? _arrivalTimer;
+
+  @override
+  void dispose() {
+    _arrivalTimer?.cancel();
+    super.dispose();
+  }
+
+  void _showNextText() {
+    if (_arriving) return;
+    setState(() => _arriving = true);
+    _arrivalTimer = Timer(const Duration(milliseconds: 650), () {
+      if (!mounted) return;
+      setState(() {
+        _index = (_index + 1) % _texts.length;
+        _arriving = false;
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final message = _texts[_index];
+    final width = MediaQuery.sizeOf(context).width;
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('Text imitation')),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 860),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 24, 20, 48),
+                child: Column(
+                  children: [
+                    Text(
+                      'TEXT MESSAGE SIMULATOR',
+                      textAlign: TextAlign.center,
+                      style: pixelHeading(width < 520 ? 22 : 29),
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'A safe preview of how suspicious and everyday texts can appear.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: pixelMuted, fontSize: 15),
+                    ),
+                    const SizedBox(height: 24),
+                    _PhonePreview(
+                      message: message,
+                      arriving: _arriving,
+                      number: _index + 1,
+                      total: _texts.length,
+                    ),
+                    const SizedBox(height: 25),
+                    Wrap(
+                      alignment: WrapAlignment.center,
+                      spacing: 12,
+                      runSpacing: 12,
+                      children: [
+                        FilledButton.icon(
+                          onPressed: _arriving ? null : _showNextText,
+                          icon: const Icon(Icons.sms_outlined),
+                          label: const Text('Send next text'),
+                        ),
+                        OutlinedButton.icon(
+                          onPressed: _arriving
+                              ? null
+                              : () => widget.onReviewMessage(message),
+                          icon: const Icon(Icons.search_rounded),
+                          label: const Text('Review this text'),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 14),
+                    const Text(
+                      'These messages are fictional. Nothing is sent to a real phone.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: pixelMuted, fontSize: 13),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _PhonePreview extends StatelessWidget {
+  const _PhonePreview({
+    required this.message,
+    required this.arriving,
+    required this.number,
+    required this.total,
+  });
+
+  final PracticeMessage message;
+  final bool arriving;
+  final int number;
+  final int total;
+
+  @override
+  Widget build(BuildContext context) => Container(
+        width: 390,
+        height: 500,
+        padding: const EdgeInsets.all(6),
+        decoration: BoxDecoration(
+          color: pixelInk,
+          border: Border.all(color: pixelInk, width: 3),
+          borderRadius: BorderRadius.circular(28),
+          boxShadow: const [BoxShadow(color: pixelInk, offset: Offset(7, 7))],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(19),
+          child: ColoredBox(
+            color: pixelCream,
+            child: Column(
+              children: [
+                Container(
+                  height: 37,
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  color: pixelSky,
+                  child: const Row(
+                    children: [
+                      Text('9:41',
+                          style: TextStyle(
+                              fontFamily: 'Silkscreen', fontSize: 11)),
+                      Spacer(),
+                      Icon(Icons.signal_cellular_alt, size: 16),
+                      SizedBox(width: 6),
+                      Icon(Icons.wifi, size: 16),
+                      SizedBox(width: 6),
+                      Icon(Icons.battery_full, size: 18),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 17, vertical: 13),
+                  decoration: const BoxDecoration(
+                    color: pixelCream,
+                    border: Border(
+                      bottom: BorderSide(color: pixelInk, width: 2),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 40,
+                        height: 40,
+                        decoration: pixelPanel(pixelGold, shadow: false),
+                        child:
+                            const Icon(Icons.person, color: pixelInk, size: 25),
+                      ),
+                      const SizedBox(width: 11),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              message.sender,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontFamily: 'Silkscreen',
+                                fontSize: 12,
+                                color: pixelInk,
+                              ),
+                            ),
+                            const Text('Text message',
+                                style:
+                                    TextStyle(color: pixelMuted, fontSize: 12)),
+                          ],
+                        ),
+                      ),
+                      const Icon(Icons.more_horiz, color: pixelInk),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    width: double.infinity,
+                    color: pixelSky,
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(top: 20),
+                          child: Text(
+                            'TODAY  ·  TEXT $number OF $total',
+                            style: const TextStyle(
+                              fontFamily: 'Silkscreen',
+                              fontSize: 10,
+                              color: pixelMuted,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 250),
+                            child: arriving
+                                ? const Center(
+                                    key: ValueKey('arriving'),
+                                    child: Text(
+                                      'INCOMING TEXT...',
+                                      style: TextStyle(
+                                        fontFamily: 'Silkscreen',
+                                        fontSize: 13,
+                                        color: pixelPurple,
+                                      ),
+                                    ),
+                                  )
+                                : Align(
+                                    key: ValueKey(message.id),
+                                    alignment: Alignment.topLeft,
+                                    child: Padding(
+                                      padding: const EdgeInsets.fromLTRB(
+                                          16, 32, 42, 16),
+                                      child: Container(
+                                        padding: const EdgeInsets.all(16),
+                                        decoration: pixelPanel(pixelMint),
+                                        child: SelectableText(
+                                          message.body,
+                                          style: const TextStyle(
+                                            fontSize: 17,
+                                            height: 1.4,
+                                            color: pixelInk,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  decoration: const BoxDecoration(
+                    color: pixelCream,
+                    border: Border(top: BorderSide(color: pixelInk, width: 2)),
+                  ),
+                  child: const Text(
+                    'SIMULATION ONLY  ·  REPLIES DISABLED',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontFamily: 'Silkscreen',
+                      fontSize: 10,
+                      color: pixelMuted,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+}

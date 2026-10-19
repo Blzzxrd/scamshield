@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'data/content.dart';
 import 'screens/activity_pages.dart';
+import 'screens/text_simulation_page.dart';
 import 'services/progress_store.dart';
 import 'widgets/pixel_theme.dart';
 import 'widgets/pixel_world.dart';
@@ -167,6 +168,15 @@ class _AppShellState extends State<AppShell> {
     );
   }
 
+  void _openTextSimulation() {
+    Navigator.push(
+      context,
+      MaterialPageRoute<void>(
+        builder: (_) => TextSimulationPage(onReviewMessage: _openMessage),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final progress = _progress;
@@ -188,6 +198,7 @@ class _AppShellState extends State<AppShell> {
           2 => _PracticeView(
               progress: progress,
               onOpenMessage: _openMessage,
+              onOpenTextSimulation: _openTextSimulation,
               onOpenCall: _openCall,
             ),
           _ => _ProfileView(progress: progress),
@@ -667,10 +678,12 @@ class _PracticeView extends StatelessWidget {
   const _PracticeView({
     required this.progress,
     required this.onOpenMessage,
+    required this.onOpenTextSimulation,
     required this.onOpenCall,
   });
   final AppProgress progress;
   final ValueChanged<PracticeMessage> onOpenMessage;
+  final VoidCallback onOpenTextSimulation;
   final VoidCallback onOpenCall;
 
   @override
@@ -683,6 +696,14 @@ class _PracticeView extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           _ActionCard(
+            icon: Icons.sms_rounded,
+            title: 'Text imitation',
+            subtitle: 'Watch simulated texts arrive on a phone.',
+            button: 'Open phone',
+            onPressed: onOpenTextSimulation,
+          ),
+          const SizedBox(height: 14),
+          _ActionCard(
             icon: Icons.call_rounded,
             title: 'Incoming call simulation',
             subtitle: progress.callCompleted
@@ -693,17 +714,18 @@ class _PracticeView extends StatelessWidget {
           ),
           const SizedBox(height: 30),
           const Text(
-            'SIMULATED INBOX',
+            'SIMULATED EMAIL INBOX',
             style: TextStyle(
                 fontFamily: 'Silkscreen', fontSize: 22, color: pixelInk),
           ),
           const SizedBox(height: 4),
           const Text(
-            'Open a message, make your call, and read the explanation.',
+            'Open an email and decide whether it looks safe.',
             style: TextStyle(color: pixelMuted),
           ),
           const SizedBox(height: 16),
-          for (final message in practiceMessages) ...[
+          for (final message in practiceMessages
+              .where((message) => message.channel == 'Email')) ...[
             Card(
               child: ListTile(
                 contentPadding: const EdgeInsets.symmetric(
@@ -714,12 +736,7 @@ class _PracticeView extends StatelessWidget {
                   width: 42,
                   height: 42,
                   decoration: pixelPanel(pixelMint, shadow: false),
-                  child: Icon(
-                    message.channel == 'Email'
-                        ? Icons.mail_outline
-                        : Icons.sms_outlined,
-                    color: pixelPurple,
-                  ),
+                  child: const Icon(Icons.mail_outline, color: pixelPurple),
                 ),
                 title: Text(
                   message.subject,
