@@ -2,6 +2,8 @@
 
 A small Flutter web prototype for learning how to spot scams. It has two short lessons, a simulated inbox, one scripted phone scenario, XP, and local progress. Everything is simulated; the messages contain no live links.
 
+The game-inspired artwork is drawn in Flutter. The bundled Silkscreen font is licensed under the [SIL Open Font License](assets/fonts/OFL.txt).
+
 ## Run
 
 Install the [Flutter SDK](https://docs.flutter.dev/get-started/install), then run:

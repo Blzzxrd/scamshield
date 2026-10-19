@@ -3,13 +3,15 @@ import 'package:flutter/material.dart';
 import 'data/content.dart';
 import 'screens/activity_pages.dart';
 import 'services/progress_store.dart';
+import 'widgets/pixel_theme.dart';
+import 'widgets/pixel_world.dart';
 
 void main() => runApp(const ScamShieldApp());
 
-const navy = Color(0xFF102B45);
-const teal = Color(0xFF087F8C);
-const mint = Color(0xFF5DE0BB);
-const pale = Color(0xFFF4F8FA);
+const navy = pixelInk;
+const teal = pixelPurple;
+const mint = pixelGrass;
+const pale = pixelSky;
 
 class ScamShieldApp extends StatelessWidget {
   const ScamShieldApp({super.key});
@@ -22,10 +24,10 @@ class ScamShieldApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
-          seedColor: teal,
-          primary: teal,
-          secondary: mint,
-          surface: Colors.white,
+          seedColor: pixelPurple,
+          primary: pixelPurple,
+          secondary: pixelGrass,
+          surface: pixelCream,
         ),
         scaffoldBackgroundColor: pale,
         textTheme: ThemeData.light().textTheme.apply(
@@ -34,17 +36,40 @@ class ScamShieldApp extends StatelessWidget {
             ),
         cardTheme: CardThemeData(
           elevation: 0,
-          color: Colors.white,
+          color: pixelCream,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(24),
+            borderRadius: BorderRadius.zero,
+            side: const BorderSide(color: pixelInk, width: 2),
           ),
         ),
         filledButtonTheme: FilledButtonThemeData(
           style: FilledButton.styleFrom(
-            padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(14),
-            ),
+            backgroundColor: pixelPurple,
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 17),
+            textStyle: const TextStyle(fontFamily: 'Silkscreen', fontSize: 12),
+            side: const BorderSide(color: pixelInk, width: 2),
+            shape:
+                const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+          ),
+        ),
+        outlinedButtonTheme: OutlinedButtonThemeData(
+          style: OutlinedButton.styleFrom(
+            foregroundColor: pixelInk,
+            backgroundColor: pixelCream,
+            textStyle: const TextStyle(fontFamily: 'Silkscreen', fontSize: 12),
+            side: const BorderSide(color: pixelInk, width: 2),
+            shape:
+                const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+          ),
+        ),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: pixelSky,
+          foregroundColor: pixelInk,
+          titleTextStyle: TextStyle(
+            fontFamily: 'Silkscreen',
+            fontSize: 18,
+            color: pixelInk,
           ),
         ),
       ),
@@ -170,6 +195,7 @@ class _AppShellState extends State<AppShell> {
         return Scaffold(
           body: SafeArea(
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 if (wide)
                   _SideNavigation(
@@ -178,7 +204,8 @@ class _AppShellState extends State<AppShell> {
                   ),
                 Expanded(
                   child: SingleChildScrollView(
-                    child: Center(
+                    child: Align(
+                      alignment: Alignment.topCenter,
                       child: ConstrainedBox(
                         constraints: const BoxConstraints(maxWidth: 1100),
                         child: Padding(
@@ -199,32 +226,54 @@ class _AppShellState extends State<AppShell> {
           ),
           bottomNavigationBar: wide
               ? null
-              : NavigationBar(
-                  selectedIndex: _tab,
-                  onDestinationSelected: (index) =>
-                      setState(() => _tab = index),
-                  destinations: const [
-                    NavigationDestination(
-                      icon: Icon(Icons.home_outlined),
-                      selectedIcon: Icon(Icons.home),
-                      label: 'Home',
+              : NavigationBarTheme(
+                  data: NavigationBarThemeData(
+                    indicatorShape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.zero,
+                      side: BorderSide(color: pixelInk, width: 2),
                     ),
-                    NavigationDestination(
-                      icon: Icon(Icons.menu_book_outlined),
-                      selectedIcon: Icon(Icons.menu_book),
-                      label: 'Learn',
+                    iconTheme: WidgetStateProperty.resolveWith(
+                      (states) => IconThemeData(
+                        color: states.contains(WidgetState.selected)
+                            ? pixelInk
+                            : pixelCream,
+                      ),
                     ),
-                    NavigationDestination(
-                      icon: Icon(Icons.shield_outlined),
-                      selectedIcon: Icon(Icons.shield),
-                      label: 'Practice',
+                    labelTextStyle: WidgetStateProperty.resolveWith(
+                      (states) => TextStyle(
+                        fontFamily: 'Silkscreen',
+                        fontSize: 10,
+                        color: states.contains(WidgetState.selected)
+                            ? pixelGold
+                            : pixelCream,
+                      ),
                     ),
-                    NavigationDestination(
-                      icon: Icon(Icons.person_outline),
-                      selectedIcon: Icon(Icons.person),
-                      label: 'Profile',
-                    ),
-                  ],
+                  ),
+                  child: NavigationBar(
+                    backgroundColor: pixelInk,
+                    indicatorColor: pixelGold,
+                    selectedIndex: _tab,
+                    onDestinationSelected: (index) =>
+                        setState(() => _tab = index),
+                    destinations: const [
+                      NavigationDestination(
+                          icon: Icon(Icons.home_outlined),
+                          selectedIcon: Icon(Icons.home),
+                          label: 'Home'),
+                      NavigationDestination(
+                          icon: Icon(Icons.menu_book_outlined),
+                          selectedIcon: Icon(Icons.menu_book),
+                          label: 'Learn'),
+                      NavigationDestination(
+                          icon: Icon(Icons.shield_outlined),
+                          selectedIcon: Icon(Icons.shield),
+                          label: 'Practice'),
+                      NavigationDestination(
+                          icon: Icon(Icons.person_outline),
+                          selectedIcon: Icon(Icons.person),
+                          label: 'Profile'),
+                    ],
+                  ),
                 ),
         );
       },
@@ -249,30 +298,46 @@ class _SideNavigation extends StatelessWidget {
     return Container(
       width: 240,
       padding: const EdgeInsets.fromLTRB(20, 30, 20, 24),
-      color: Colors.white,
+      decoration: const BoxDecoration(
+        color: pixelInk,
+        border: Border(right: BorderSide(color: pixelGold, width: 5)),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const _Brand(),
+          const _Brand(onDark: true),
           const SizedBox(height: 56),
           for (var i = 0; i < items.length; i++)
             Padding(
               padding: const EdgeInsets.only(bottom: 8),
-              child: ListTile(
-                leading: Icon(items[i].$1),
-                title: Text(items[i].$2),
-                selected: selected == i,
-                selectedTileColor: const Color(0xFFE5F5F4),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
+              child: Container(
+                decoration:
+                    selected == i ? pixelPanel(pixelGold, shadow: false) : null,
+                child: ListTile(
+                  leading: Icon(
+                    items[i].$1,
+                    color: selected == i ? pixelInk : pixelCream,
+                  ),
+                  title: Text(
+                    items[i].$2.toUpperCase(),
+                    style: TextStyle(
+                      fontFamily: 'Silkscreen',
+                      fontSize: 13,
+                      color: selected == i ? pixelInk : pixelCream,
+                    ),
+                  ),
+                  onTap: () => onSelect(i),
                 ),
-                onTap: () => onSelect(i),
               ),
             ),
           const Spacer(),
           const Text(
-            'Small steps. Safer choices.',
-            style: TextStyle(color: Color(0xFF667A8C)),
+            'PRESS START. STAY SAFE.',
+            style: TextStyle(
+              color: pixelGold,
+              fontFamily: 'Silkscreen',
+              fontSize: 11,
+            ),
           ),
         ],
       ),
@@ -281,7 +346,9 @@ class _SideNavigation extends StatelessWidget {
 }
 
 class _Brand extends StatelessWidget {
-  const _Brand();
+  const _Brand({this.onDark = false});
+
+  final bool onDark;
 
   @override
   Widget build(BuildContext context) => Row(
@@ -290,20 +357,16 @@ class _Brand extends StatelessWidget {
           Container(
             width: 40,
             height: 40,
-            decoration: BoxDecoration(
-              color: teal,
-              borderRadius: BorderRadius.circular(13),
-            ),
-            child:
-                const Icon(Icons.shield_rounded, color: Colors.white, size: 24),
+            decoration: pixelPanel(pixelGold, shadow: false),
+            child: const Icon(Icons.shield_rounded, color: pixelInk, size: 24),
           ),
           const SizedBox(width: 10),
-          const Text(
+          Text(
             'ScamShield',
             style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.w800,
-              letterSpacing: -0.8,
+              fontFamily: 'Silkscreen',
+              color: onDark ? pixelCream : pixelInk,
+              fontSize: 17,
             ),
           ),
         ],
@@ -333,81 +396,58 @@ class _HomeView extends StatelessWidget {
           const SizedBox(height: 30),
         ],
         const Text(
-          'WELCOME TO YOUR SAFER INTERNET',
+          'WELCOME, DEFENDER',
           style: TextStyle(
-            color: teal,
+            color: pixelPurple,
+            fontFamily: 'Silkscreen',
             fontSize: 12,
-            fontWeight: FontWeight.w800,
-            letterSpacing: 1.6,
           ),
         ),
         const SizedBox(height: 8),
         Text(
-          'Learn to spot the signs.',
-          style: Theme.of(context)
-              .textTheme
-              .headlineLarge
-              ?.copyWith(fontWeight: FontWeight.w800, letterSpacing: -1.2),
+          'YOUR QUEST BOARD',
+          style: pixelHeading(MediaQuery.sizeOf(context).width < 600 ? 23 : 31),
         ),
         const SizedBox(height: 8),
         const Text(
-          'Build your scam spotting skills with quick lessons and safe practice.',
-          style: TextStyle(fontSize: 16, color: Color(0xFF617587)),
+          'Train your instincts with quick lessons and safe practice.',
+          style: TextStyle(fontSize: 16, color: pixelMuted),
         ),
         const SizedBox(height: 26),
+        PixelWorldBanner(onStart: onOpenLesson),
+        const SizedBox(height: 24),
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.all(28),
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(colors: [navy, Color(0xFF14596B)]),
-            borderRadius: BorderRadius.circular(28),
-          ),
-          child: Wrap(
-            alignment: WrapAlignment.spaceBetween,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            spacing: 24,
-            runSpacing: 24,
+          padding: const EdgeInsets.all(20),
+          decoration: pixelPanel(pixelCream),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
-                width: 390,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'YOUR LEARNING JOURNEY',
-                      style: TextStyle(
-                        color: mint,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 1.3,
-                      ),
+              Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: 14,
+                runSpacing: 10,
+                children: [
+                  const Icon(Icons.stars_rounded,
+                      color: Color(0xFFE59A17), size: 32),
+                  Text('LEVEL ${progress.level}', style: pixelHeading(21)),
+                  Text(
+                    '${progress.xp} XP  /  ${100 - progress.xp % 100} TO NEXT LEVEL',
+                    style: const TextStyle(
+                      fontFamily: 'Silkscreen',
+                      fontSize: 12,
+                      color: pixelPurple,
                     ),
-                    const SizedBox(height: 15),
-                    Text(
-                      'Level ${progress.level} defender',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 29,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    const SizedBox(height: 7),
-                    Text(
-                      '${progress.xp} XP earned · ${100 - progress.xp % 100} XP to next level',
-                      style: const TextStyle(color: Color(0xFFD0E9EC)),
-                    ),
-                    const SizedBox(height: 20),
-                    LinearProgressIndicator(
-                      value: progress.levelProgress,
-                      minHeight: 9,
-                      borderRadius: BorderRadius.circular(10),
-                      color: mint,
-                      backgroundColor: const Color(0xFF427080),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              const Icon(Icons.verified_user_rounded, size: 92, color: mint),
+              const SizedBox(height: 18),
+              LinearProgressIndicator(
+                value: progress.levelProgress,
+                minHeight: 14,
+                color: pixelGrass,
+                backgroundColor: pixelMint,
+              ),
             ],
           ),
         ),
@@ -494,20 +534,19 @@ class _StatCard extends StatelessWidget {
   Widget build(BuildContext context) => Container(
         width: width,
         padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-        ),
+        decoration: pixelPanel(pixelCream),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(icon, color: teal),
+            Icon(icon, color: pixelPurple),
             const SizedBox(height: 14),
             Text(
               value,
-              style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w800),
+              style: pixelHeading(25),
             ),
-            Text(label, style: const TextStyle(color: Color(0xFF617587))),
+            Text(label.toUpperCase(),
+                style: const TextStyle(
+                    fontFamily: 'Silkscreen', fontSize: 11, color: pixelMuted)),
           ],
         ),
       );
@@ -522,11 +561,11 @@ class _SectionHeading extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            title,
-            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800),
+            title.toUpperCase(),
+            style: pixelHeading(22),
           ),
           const SizedBox(height: 4),
-          Text(subtitle, style: const TextStyle(color: Color(0xFF617587))),
+          Text(subtitle, style: const TextStyle(color: pixelMuted)),
         ],
       );
 }
@@ -548,10 +587,7 @@ class _ActionCard extends StatelessWidget {
   Widget build(BuildContext context) => Container(
         width: double.infinity,
         padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-        ),
+        decoration: pixelPanel(pixelCream),
         child: Wrap(
           alignment: WrapAlignment.spaceBetween,
           crossAxisAlignment: WrapCrossAlignment.center,
@@ -563,11 +599,8 @@ class _ActionCard extends StatelessWidget {
               children: [
                 Container(
                   padding: const EdgeInsets.all(13),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE5F5F4),
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: Icon(icon, color: teal),
+                  decoration: pixelPanel(pixelGold, shadow: false),
+                  child: Icon(icon, color: pixelInk),
                 ),
                 const SizedBox(width: 15),
                 Flexible(
@@ -577,13 +610,14 @@ class _ActionCard extends StatelessWidget {
                       Text(
                         title,
                         style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
+                          fontFamily: 'Silkscreen',
+                          fontSize: 16,
+                          color: pixelInk,
                         ),
                       ),
                       Text(
                         subtitle,
-                        style: const TextStyle(color: Color(0xFF617587)),
+                        style: const TextStyle(color: pixelMuted),
                       ),
                     ],
                   ),
@@ -659,13 +693,14 @@ class _PracticeView extends StatelessWidget {
           ),
           const SizedBox(height: 30),
           const Text(
-            'Simulated inbox',
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
+            'SIMULATED INBOX',
+            style: TextStyle(
+                fontFamily: 'Silkscreen', fontSize: 22, color: pixelInk),
           ),
           const SizedBox(height: 4),
           const Text(
             'Open a message, make your call, and read the explanation.',
-            style: TextStyle(color: Color(0xFF617587)),
+            style: TextStyle(color: pixelMuted),
           ),
           const SizedBox(height: 16),
           for (final message in practiceMessages) ...[
@@ -675,18 +710,21 @@ class _PracticeView extends StatelessWidget {
                   horizontal: 20,
                   vertical: 12,
                 ),
-                leading: CircleAvatar(
-                  backgroundColor: const Color(0xFFE5F5F4),
+                leading: Container(
+                  width: 42,
+                  height: 42,
+                  decoration: pixelPanel(pixelMint, shadow: false),
                   child: Icon(
                     message.channel == 'Email'
                         ? Icons.mail_outline
                         : Icons.sms_outlined,
-                    color: teal,
+                    color: pixelPurple,
                   ),
                 ),
                 title: Text(
                   message.subject,
-                  style: const TextStyle(fontWeight: FontWeight.w700),
+                  style:
+                      const TextStyle(fontFamily: 'Silkscreen', fontSize: 14),
                 ),
                 subtitle: Text(
                   '${message.channel} · ${message.sender}',
@@ -694,7 +732,7 @@ class _PracticeView extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
                 trailing: progress.reviewedMessages.contains(message.id)
-                    ? const Icon(Icons.check_circle, color: teal)
+                    ? const Icon(Icons.check_circle, color: pixelPurple)
                     : const Icon(Icons.chevron_right),
                 onTap: () => onOpenMessage(message),
               ),
@@ -721,19 +759,18 @@ class _ProfileView extends StatelessWidget {
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(26),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(24),
-            ),
+            decoration: pixelPanel(pixelCream),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
-                    const CircleAvatar(
-                      radius: 27,
-                      backgroundColor: Color(0xFFE5F5F4),
-                      child: Icon(Icons.shield, color: teal, size: 30),
+                    Container(
+                      width: 54,
+                      height: 54,
+                      decoration: pixelPanel(pixelGold, shadow: false),
+                      child:
+                          const Icon(Icons.shield, color: pixelInk, size: 30),
                     ),
                     const SizedBox(width: 15),
                     Column(
@@ -741,14 +778,11 @@ class _ProfileView extends StatelessWidget {
                       children: [
                         Text(
                           'Level ${progress.level} defender',
-                          style: const TextStyle(
-                            fontSize: 21,
-                            fontWeight: FontWeight.w800,
-                          ),
+                          style: pixelHeading(19),
                         ),
                         Text(
                           '${progress.xp} XP earned',
-                          style: const TextStyle(color: Color(0xFF617587)),
+                          style: const TextStyle(color: pixelMuted),
                         ),
                       ],
                     ),
@@ -757,21 +791,23 @@ class _ProfileView extends StatelessWidget {
                 const SizedBox(height: 22),
                 LinearProgressIndicator(
                   value: progress.levelProgress,
-                  minHeight: 9,
-                  borderRadius: BorderRadius.circular(10),
+                  minHeight: 12,
+                  color: pixelGrass,
+                  backgroundColor: pixelMint,
                 ),
                 const SizedBox(height: 8),
                 Text(
                   '${100 - progress.xp % 100} XP to level ${progress.level + 1}',
-                  style: const TextStyle(color: Color(0xFF617587)),
+                  style: const TextStyle(color: pixelMuted),
                 ),
               ],
             ),
           ),
           const SizedBox(height: 26),
           const Text(
-            'Achievements',
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
+            'ACHIEVEMENTS',
+            style: TextStyle(
+                fontFamily: 'Silkscreen', fontSize: 22, color: pixelInk),
           ),
           const SizedBox(height: 14),
           _Badge(
@@ -796,7 +832,7 @@ class _ProfileView extends StatelessWidget {
           const SizedBox(height: 24),
           const Text(
             'Progress is saved in this browser.',
-            style: TextStyle(color: Color(0xFF617587)),
+            style: TextStyle(color: pixelMuted),
           ),
         ],
       );
@@ -818,19 +854,22 @@ class _Badge extends StatelessWidget {
         child: ListTile(
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
-          leading: CircleAvatar(
-            backgroundColor:
-                unlocked ? const Color(0xFFE5F5F4) : const Color(0xFFF0F3F5),
-            child: Icon(icon, color: unlocked ? teal : const Color(0xFF93A3AE)),
+          leading: Container(
+            width: 42,
+            height: 42,
+            decoration:
+                pixelPanel(unlocked ? pixelGold : pixelMint, shadow: false),
+            child: Icon(icon, color: unlocked ? pixelInk : pixelMuted),
           ),
-          title:
-              Text(title, style: const TextStyle(fontWeight: FontWeight.w700)),
+          title: Text(title.toUpperCase(),
+              style: const TextStyle(fontFamily: 'Silkscreen', fontSize: 14)),
           subtitle: Text(subtitle),
           trailing: Text(
             unlocked ? 'Unlocked' : 'Locked',
             style: TextStyle(
-              color: unlocked ? teal : const Color(0xFF93A3AE),
-              fontWeight: FontWeight.w600,
+              color: unlocked ? pixelPurple : pixelMuted,
+              fontFamily: 'Silkscreen',
+              fontSize: 11,
             ),
           ),
         ),

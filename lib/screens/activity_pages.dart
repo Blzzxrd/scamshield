@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../data/content.dart';
+import '../widgets/pixel_theme.dart';
 
-const _navy = Color(0xFF102B45);
-const _teal = Color(0xFF087F8C);
+const _navy = pixelInk;
+const _teal = pixelPurple;
 
 class LessonPage extends StatefulWidget {
   const LessonPage({
@@ -44,10 +45,7 @@ class _LessonPageState extends State<LessonPage> {
           if (_questionIndex < 0) ...[
             _Eyebrow(widget.lesson.eyebrow),
             const SizedBox(height: 13),
-            const Text(
-              'The idea',
-              style: TextStyle(fontSize: 28, fontWeight: FontWeight.w800),
-            ),
+            Text('THE IDEA', style: pixelHeading(25)),
             const SizedBox(height: 15),
             Text(
               widget.lesson.description,
@@ -68,10 +66,7 @@ class _LessonPageState extends State<LessonPage> {
           ] else if (finished) ...[
             const Icon(Icons.verified_rounded, color: _teal, size: 68),
             const SizedBox(height: 18),
-            const Text(
-              'Lesson complete!',
-              style: TextStyle(fontSize: 30, fontWeight: FontWeight.w800),
-            ),
+            Text('LESSON COMPLETE!', style: pixelHeading(26)),
             const SizedBox(height: 10),
             Text(
               'You got $_correctCount of ${widget.lesson.questions.length} right.',
@@ -97,18 +92,13 @@ class _LessonPageState extends State<LessonPage> {
             const SizedBox(height: 14),
             LinearProgressIndicator(
               value: (_questionIndex + 1) / widget.lesson.questions.length,
-              minHeight: 7,
-              borderRadius: BorderRadius.circular(8),
+              minHeight: 12,
+              color: pixelGrass,
+              backgroundColor: pixelMint,
             ),
             const SizedBox(height: 26),
-            Text(
-              widget.lesson.questions[_questionIndex].prompt,
-              style: const TextStyle(
-                fontSize: 25,
-                fontWeight: FontWeight.w800,
-                height: 1.25,
-              ),
-            ),
+            Text(widget.lesson.questions[_questionIndex].prompt,
+                style: pixelHeading(22)),
             const SizedBox(height: 24),
             for (var i = 0;
                 i < widget.lesson.questions[_questionIndex].answers.length;
@@ -194,24 +184,18 @@ class _MessagePageState extends State<MessagePage> {
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(22),
-            ),
+            decoration: pixelPanel(pixelCream),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   widget.message.subject,
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w800,
-                  ),
+                  style: pixelHeading(20),
                 ),
                 const SizedBox(height: 14),
                 Text(
                   'From: ${widget.message.sender}',
-                  style: const TextStyle(color: Color(0xFF607789)),
+                  style: const TextStyle(color: pixelMuted),
                 ),
                 const Divider(height: 32),
                 SelectableText(
@@ -222,10 +206,7 @@ class _MessagePageState extends State<MessagePage> {
             ),
           ),
           const SizedBox(height: 26),
-          const Text(
-            'What do you think?',
-            style: TextStyle(fontSize: 23, fontWeight: FontWeight.w800),
-          ),
+          Text('SCAM OR SAFE?', style: pixelHeading(22)),
           const SizedBox(height: 14),
           Wrap(
             spacing: 12,
@@ -295,25 +276,22 @@ class _CallPageState extends State<CallPage> {
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(30),
-              decoration: BoxDecoration(
-                gradient:
-                    const LinearGradient(colors: [_navy, Color(0xFF14596B)]),
-                borderRadius: BorderRadius.circular(26),
-              ),
+              decoration: pixelPanel(_navy),
               child: Column(
                 children: [
-                  const CircleAvatar(
-                    radius: 34,
-                    backgroundColor: Color(0xFF426A7B),
-                    child: Icon(Icons.call, color: Colors.white, size: 34),
+                  Container(
+                    width: 68,
+                    height: 68,
+                    decoration: pixelPanel(pixelGold, shadow: false),
+                    child: const Icon(Icons.call, color: pixelInk, size: 34),
                   ),
                   const SizedBox(height: 14),
                   const Text(
-                    'Unknown caller',
+                    'UNKNOWN CALLER',
                     style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 25,
-                      fontWeight: FontWeight.w800,
+                      color: pixelCream,
+                      fontFamily: 'Silkscreen',
+                      fontSize: 22,
                     ),
                   ),
                   const SizedBox(height: 5),
@@ -321,7 +299,7 @@ class _CallPageState extends State<CallPage> {
                     _answered
                         ? 'Connected · Simulation'
                         : 'Incoming call · Simulation',
-                    style: const TextStyle(color: Color(0xFFD0E9EC)),
+                    style: const TextStyle(color: pixelMint),
                   ),
                   if (!_answered) ...[
                     const SizedBox(height: 24),
@@ -343,10 +321,7 @@ class _CallPageState extends State<CallPage> {
                     '“I’m with your bank’s fraud team. There is a charge on your account. Read me the six-digit code we just sent so I can stop it.”',
               ),
               const SizedBox(height: 25),
-              const Text(
-                'How do you respond?',
-                style: TextStyle(fontSize: 23, fontWeight: FontWeight.w800),
-              ),
+              Text('CHOOSE YOUR RESPONSE', style: pixelHeading(21)),
               const SizedBox(height: 14),
               _ChoiceButton(
                 text: 'Read the code so the charge can be stopped',
@@ -399,11 +374,12 @@ class _ActivityScaffold extends StatelessWidget {
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
           title: Text(title),
-          backgroundColor: const Color(0xFFF4F8FA),
+          backgroundColor: pixelSky,
         ),
         body: SafeArea(
           child: SingleChildScrollView(
-            child: Center(
+            child: Align(
+              alignment: Alignment.topCenter,
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 760),
                 child: Padding(
@@ -425,9 +401,8 @@ class _Eyebrow extends StatelessWidget {
         text,
         style: const TextStyle(
           color: _teal,
+          fontFamily: 'Silkscreen',
           fontSize: 12,
-          fontWeight: FontWeight.w800,
-          letterSpacing: 1.5,
         ),
       );
 }
@@ -452,10 +427,12 @@ class _ChoiceButton extends StatelessWidget {
           style: OutlinedButton.styleFrom(
             alignment: Alignment.centerLeft,
             padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
-            backgroundColor: selected ? const Color(0xFFE5F5F4) : Colors.white,
-            side: BorderSide(color: selected ? _teal : const Color(0xFFD5E2E8)),
+            backgroundColor: selected ? pixelMint : pixelCream,
+            disabledBackgroundColor: selected ? pixelMint : pixelCream,
+            disabledForegroundColor: selected ? pixelInk : pixelMuted,
+            side: const BorderSide(color: pixelInk, width: 2),
             shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
           ),
           child: Text(text, style: const TextStyle(fontSize: 16)),
         ),
@@ -475,10 +452,7 @@ class _NoteCard extends StatelessWidget {
   Widget build(BuildContext context) => Container(
         width: double.infinity,
         padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: const Color(0xFFE5F5F4),
-          borderRadius: BorderRadius.circular(18),
-        ),
+        decoration: pixelPanel(pixelMint),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -487,9 +461,9 @@ class _NoteCard extends StatelessWidget {
                 Icon(icon, color: _teal),
                 const SizedBox(width: 9),
                 Text(
-                  title,
-                  style: const TextStyle(
-                      fontSize: 17, fontWeight: FontWeight.w800),
+                  title.toUpperCase(),
+                  style:
+                      const TextStyle(fontFamily: 'Silkscreen', fontSize: 15),
                 ),
               ],
             ),
