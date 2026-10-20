@@ -30,26 +30,6 @@ class Lesson {
   final List<QuizQuestion> questions;
 }
 
-class PracticeMessage {
-  const PracticeMessage({
-    required this.id,
-    required this.channel,
-    required this.sender,
-    required this.subject,
-    required this.body,
-    required this.isScam,
-    required this.explanation,
-  });
-
-  final String id;
-  final String channel;
-  final String sender;
-  final String subject;
-  final String body;
-  final bool isScam;
-  final String explanation;
-}
-
 const lessons = <Lesson>[
   Lesson(
     id: 'basics',
@@ -138,52 +118,5 @@ const lessons = <Lesson>[
             'Unexpected attachments can be harmful. Contact the sender through a known channel.',
       ),
     ],
-  ),
-];
-
-const practiceMessages = <PracticeMessage>[
-  PracticeMessage(
-    id: 'parcel',
-    channel: 'Email',
-    sender: 'Delivery Team <alerts@parcel-update.example>',
-    subject: 'Action required: missed delivery',
-    body:
-        'We could not deliver your parcel. Pay a \$1.95 rescheduling fee within 30 minutes to avoid return to sender.',
-    isScam: true,
-    explanation:
-        'The urgent deadline, unexpected fee, and unfamiliar sender domain are warning signs. Check delivery status in the carrier’s official app.',
-  ),
-  PracticeMessage(
-    id: 'library',
-    channel: 'Text',
-    sender: 'Town Library',
-    subject: 'Your hold is ready',
-    body:
-        'The book you requested is ready for pickup at the front desk. We will hold it through Friday. No action is needed.',
-    isScam: false,
-    explanation:
-        'This message matches a request you made and asks for no payment, code, or link click. If unsure, call the library using its public number.',
-  ),
-  PracticeMessage(
-    id: 'bank',
-    channel: 'Text',
-    sender: '+1 (555) 010-0198',
-    subject: 'Account alert',
-    body:
-        'Your card is locked! Reply with the six-digit code we just sent to restore access immediately.',
-    isScam: true,
-    explanation:
-        'Never share a one-time code. Open your bank’s official app or call the number on your card to check the account.',
-  ),
-  PracticeMessage(
-    id: 'appointment',
-    channel: 'Email',
-    sender: 'Community Center <hello@community-center.example>',
-    subject: 'Reminder: workshop tomorrow',
-    body:
-        'Thanks for registering for the safety workshop. It begins tomorrow at 10 AM. Bring your registration confirmation to the front desk.',
-    isScam: false,
-    explanation:
-        'This is a routine reminder without a payment or secret-code request. You can confirm it using your original registration if needed.',
   ),
 ];

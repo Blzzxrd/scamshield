@@ -2,8 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import '../data/content.dart';
-import '../widgets/pixel_theme.dart';
+import '../../models/practice_message.dart';
+import 'text_messages.dart';
+import '../interface/pixel_theme.dart';
 
 /// A phone-shaped preview for the text practice scenarios.
 class TextSimulationPage extends StatefulWidget {
@@ -21,11 +22,7 @@ class TextSimulationPage extends StatefulWidget {
 }
 
 class _TextSimulationPageState extends State<TextSimulationPage> {
-  final List<PracticeMessage> _texts = practiceMessages
-      .where((message) => message.channel == 'Text')
-      .toList()
-      .reversed
-      .toList();
+  final List<PracticeMessage> _texts = textMessages.reversed.toList();
 
   int _index = 0;
   bool _arriving = false;
