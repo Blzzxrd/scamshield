@@ -19,8 +19,8 @@ dev_dependencies:
 
 flutter:
   assets:
-    - assets/lessons
-    - assets/practice_messages
+    - assets/lessons/
+    - assets/practice_messages/
   uses-material-design: true
   fonts:
     - family: Silkscreen
