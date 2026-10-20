@@ -1,0 +1,19 @@
+{
+  "id": "basics",
+  "title": "Spot the warning signs",
+  "eyebrow": "LESSON 01 · 3 MIN",
+  "description": "Scammers often create urgency so you act before you think. Pause, check who contacted you, and use a trusted way to verify their story.",
+  "example": "“Your account will close in 10 minutes. Send the one-time code now.” A real support agent should not ask you to share that code.",
+  "questions": [
+    {
+      "prompt": "A message says you must act in 10 minutes. What should you do first?",
+      "answers": [
+        "Tap its link",
+        "Pause and verify independently",
+        "Reply with your password"
+      ],
+      "correctIndex": 1,
+      "explanation": "Urgency is a common tactic. Use an official app or a number you already trust."
+    }
+  ]
+}

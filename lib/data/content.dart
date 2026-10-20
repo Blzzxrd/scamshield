@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'package:flutter/services.dart';
+
 class QuizQuestion {
   const QuizQuestion({
     required this.prompt,
@@ -10,6 +13,15 @@ class QuizQuestion {
   final List<String> answers;
   final int correctIndex;
   final String explanation;
+
+  factory QuizQuestion.fromJson(Map<String, dynamic> json) {
+    return QuizQuestion(
+      prompt: json['prompt'] as String,
+      answers: List<String>.from(json['answers']),
+      correctIndex: json['correctIndex'] as int,
+      explanation: json['explanation'] as String,
+    );
+  }
 }
 
 class Lesson {
@@ -28,6 +40,22 @@ class Lesson {
   final String description;
   final String example;
   final List<QuizQuestion> questions;
+
+  factory Lesson.fromJson(Map<String, dynamic> json) {
+    var questionList = json['questions'] as List;
+    List<QuizQuestion> parsedQuestions = questionList
+        .map((q) => QuizQuestion.fromJson(q as Map<String, dynamic>))
+        .toList();
+
+    return Lesson(
+      id: json['id'] as String,
+      title: json['title'] as String,
+      eyebrow: json['eyebrow'] as String,
+      description: json['description'] as String,
+      example: json['example'] as String,
+      questions: parsedQuestions,
+    );
+  }
 }
 
 class PracticeMessage {
@@ -48,142 +76,62 @@ class PracticeMessage {
   final String body;
   final bool isScam;
   final String explanation;
+
+  factory PracticeMessage.fromJson(Map<String, dynamic> json) {
+    return PracticeMessage(
+      id: json['id'] as String,
+      channel: json['channel'] as String,
+      sender: json['sender'] as String,
+      subject: json['subject'] as String,
+      body: json['body'] as String,
+      isScam: json['isScam'] as bool,
+      explanation: json['explanation'] as String,
+    );
+  }
 }
 
-const lessons = <Lesson>[
-  Lesson(
-    id: 'basics',
-    title: 'Spot the warning signs',
-    eyebrow: 'LESSON 01 · 3 MIN',
-    description:
-        'Scammers often create urgency so you act before you think. Pause, check who contacted you, and use a trusted way to verify their story.',
-    example:
-        '“Your account will close in 10 minutes. Send the one-time code now.” A real support agent should not ask you to share that code.',
-    questions: [
-      QuizQuestion(
-        prompt:
-            'A message says you must act in 10 minutes. What should you do first?',
-        answers: [
-          'Tap its link',
-          'Pause and verify independently',
-          'Reply with your password',
-        ],
-        correctIndex: 1,
-        explanation:
-            'Urgency is a common tactic. Use an official app or a number you already trust.',
-      ),
-      QuizQuestion(
-        prompt:
-            'Someone claiming to be support asks for your one-time login code. Is that safe?',
-        answers: [
-          'Yes, if they sound professional',
-          'Only by text',
-          'No, never share the code',
-        ],
-        correctIndex: 2,
-        explanation:
-            'One-time codes protect your account. A caller can use them to sign in as you.',
-      ),
-      QuizQuestion(
-        prompt: 'Which clue deserves a closer look?',
-        answers: [
-          'A request for gift cards',
-          'A familiar company logo',
-          'A polite greeting',
-        ],
-        correctIndex: 0,
-        explanation:
-            'Gift cards and unusual payment methods are strong warning signs.',
-      ),
-    ],
-  ),
-  Lesson(
-    id: 'phishing',
-    title: 'Read an email like a detective',
-    eyebrow: 'LESSON 02 · 4 MIN',
-    description:
-        'A phishing email may copy a brand, but its sender address, link, or request can reveal the trick. Check the details before you click.',
-    example:
-        '“Delivery failed. Pay \$1.95 at parcel-help.example to reschedule.” If you did not expect a package, check the carrier directly.',
-    questions: [
-      QuizQuestion(
-        prompt:
-            'A delivery email asks for a small fee. What is the safest check?',
-        answers: [
-          'Open the email link',
-          'Use the carrier’s official app',
-          'Send card details by reply',
-        ],
-        correctIndex: 1,
-        explanation:
-            'Open a trusted app or type the known address yourself. Do not rely on the message link.',
-      ),
-      QuizQuestion(
-        prompt: 'Which detail can expose an impersonator?',
-        answers: ['Sender address', 'Brand colors', 'A large logo'],
-        correctIndex: 0,
-        explanation:
-            'A familiar design is easy to copy. Inspect the actual sender address.',
-      ),
-      QuizQuestion(
-        prompt:
-            'The email asks you to download an unexpected invoice. What now?',
-        answers: [
-          'Open it immediately',
-          'Forward it to friends',
-          'Verify with the sender another way',
-        ],
-        correctIndex: 2,
-        explanation:
-            'Unexpected attachments can be harmful. Contact the sender through a known channel.',
-      ),
-    ],
-  ),
-];
+class ContentLoader {
+  // Dynamically load all lesson JSON files from the assets/lessons/ folder
+  static Future<List<Lesson>> loadLessons() async {
+    final AssetManifest assetManifest =
+        await AssetManifest.loadFromAssetBundle(rootBundle);
 
-const practiceMessages = <PracticeMessage>[
-  PracticeMessage(
-    id: 'parcel',
-    channel: 'Email',
-    sender: 'Delivery Team <alerts@parcel-update.example>',
-    subject: 'Action required: missed delivery',
-    body:
-        'We could not deliver your parcel. Pay a \$1.95 rescheduling fee within 30 minutes to avoid return to sender.',
-    isScam: true,
-    explanation:
-        'The urgent deadline, unexpected fee, and unfamiliar sender domain are warning signs. Check delivery status in the carrier’s official app.',
-  ),
-  PracticeMessage(
-    id: 'library',
-    channel: 'Text',
-    sender: 'Town Library',
-    subject: 'Your hold is ready',
-    body:
-        'The book you requested is ready for pickup at the front desk. We will hold it through Friday. No action is needed.',
-    isScam: false,
-    explanation:
-        'This message matches a request you made and asks for no payment, code, or link click. If unsure, call the library using its public number.',
-  ),
-  PracticeMessage(
-    id: 'bank',
-    channel: 'Text',
-    sender: '+1 (555) 010-0198',
-    subject: 'Account alert',
-    body:
-        'Your card is locked! Reply with the six-digit code we just sent to restore access immediately.',
-    isScam: true,
-    explanation:
-        'Never share a one-time code. Open your bank’s official app or call the number on your card to check the account.',
-  ),
-  PracticeMessage(
-    id: 'appointment',
-    channel: 'Email',
-    sender: 'Community Center <hello@community-center.example>',
-    subject: 'Reminder: workshop tomorrow',
-    body:
-        'Thanks for registering for the safety workshop. It begins tomorrow at 10 AM. Bring your registration confirmation to the front desk.',
-    isScam: false,
-    explanation:
-        'This is a routine reminder without a payment or secret-code request. You can confirm it using your original registration if needed.',
-  ),
-];
+    // Filter asset keys belonging to the lessons folder
+    final List<String> lessonKeys = assetManifest
+        .listAssets()
+        .where((String key) =>
+            key.startsWith('assets/lessons/') && key.endsWith('.json'))
+        .toList();
+
+    List<Lesson> lessons = [];
+    for (String key in lessonKeys) {
+      final String jsonString = await rootBundle.loadString(key);
+      final Map<String, dynamic> jsonData = json.decode(jsonString);
+      lessons.add(Lesson.fromJson(jsonData));
+    }
+
+    return lessons;
+  }
+
+  // Dynamically load all practice message JSON files from the assets/practice_messages/ folder
+  static Future<List<PracticeMessage>> loadPracticeMessages() async {
+    final AssetManifest assetManifest =
+        await AssetManifest.loadFromAssetBundle(rootBundle);
+
+    final List<String> messageKeys = assetManifest
+        .listAssets()
+        .where((String key) =>
+            key.startsWith('assets/practice_messages/') &&
+            key.endsWith('.json'))
+        .toList();
+
+    List<PracticeMessage> messages = [];
+    for (String key in messageKeys) {
+      final String jsonString = await rootBundle.loadString(key);
+      final Map<String, dynamic> jsonData = json.decode(jsonString);
+      messages.add(PracticeMessage.fromJson(jsonData));
+    }
+
+    return messages;
+  }
+}

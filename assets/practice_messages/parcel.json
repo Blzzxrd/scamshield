@@ -1,0 +1,9 @@
+{
+  "id": "parcel",
+  "channel": "Email",
+  "sender": "Delivery Team <alerts@parcel-update.example>",
+  "subject": "Action required: missed delivery",
+  "body": "We could not deliver your parcel. Pay a $1.95 rescheduling fee within 30 minutes to avoid return to sender.",
+  "isScam": true,
+  "explanation": "The urgent deadline, unexpected fee, and unfamiliar sender domain are warning signs. Check delivery status in the carrier’s official app."
+}

@@ -21,12 +21,9 @@ class TextSimulationPage extends StatefulWidget {
 }
 
 class _TextSimulationPageState extends State<TextSimulationPage> {
-  final List<PracticeMessage> _texts = practiceMessages
-      .where((message) => message.channel == 'Text')
-      .toList()
-      .reversed
-      .toList();
+  late Future<List<PracticeMessage>> _messagesFuture;
 
+  List<PracticeMessage>? _texts;
   int _index = 0;
   bool _arriving = false;
   bool? _answer;
@@ -35,18 +32,34 @@ class _TextSimulationPageState extends State<TextSimulationPage> {
   Timer? _arrivalTimer;
 
   @override
+  void initState() {
+    super.initState();
+    _messagesFuture = ContentLoader.loadPracticeMessages().then((messages) {
+      final filtered = messages
+          .where((message) => message.channel == 'Text')
+          .toList()
+          .reversed
+          .toList();
+      setState(() {
+        _texts = filtered;
+      });
+      return filtered;
+    });
+  }
+
+  @override
   void dispose() {
     _arrivalTimer?.cancel();
     super.dispose();
   }
 
   void _showNextText() {
-    if (_arriving) return;
+    if (_arriving || _texts == null || _texts!.isEmpty) return;
     setState(() => _arriving = true);
     _arrivalTimer = Timer(const Duration(milliseconds: 650), () {
       if (!mounted) return;
       setState(() {
-        _index = (_index + 1) % _texts.length;
+        _index = (_index + 1) % _texts!.length;
         _arriving = false;
         _answer = null;
         _earnedXp = 0;
@@ -68,114 +81,133 @@ class _TextSimulationPageState extends State<TextSimulationPage> {
 
   @override
   Widget build(BuildContext context) {
-    final message = _texts[_index];
     final width = MediaQuery.sizeOf(context).width;
-    final correct = _answer == message.isScam;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Text imitation')),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 860),
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 24, 20, 48),
-                child: Column(
-                  children: [
-                    Text(
-                      'TEXT MESSAGE SIMULATOR',
-                      textAlign: TextAlign.center,
-                      style: pixelHeading(width < 520 ? 22 : 29),
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'A safe preview of how suspicious and everyday texts can appear.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: pixelMuted, fontSize: 15),
-                    ),
-                    const SizedBox(height: 24),
-                    _PhonePreview(
-                      message: message,
-                      arriving: _arriving,
-                      number: _index + 1,
-                      total: _texts.length,
-                    ),
-                    const SizedBox(height: 25),
-                    Text('SCAM OR SAFE?', style: pixelHeading(19)),
-                    const SizedBox(height: 12),
-                    Wrap(
-                      alignment: WrapAlignment.center,
-                      spacing: 12,
-                      runSpacing: 12,
+        child: FutureBuilder<List<PracticeMessage>>(
+          future: _messagesFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(
+                child: Text('Error loading messages: ${snapshot.error}'),
+              );
+            } else if (_texts == null || _texts!.isEmpty) {
+              return const Center(child: Text('No text messages available.'));
+            }
+
+            final message = _texts![_index];
+            final correct = _answer == message.isScam;
+
+            return SingleChildScrollView(
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 860),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 24, 20, 48),
+                    child: Column(
                       children: [
-                        FilledButton.icon(
-                          onPressed: _arriving || _answer != null
-                              ? null
-                              : () => _answerText(message, true),
-                          icon: const Icon(Icons.warning_amber_rounded),
-                          label: const Text('This is a scam'),
+                        Text(
+                          'TEXT MESSAGE SIMULATOR',
+                          textAlign: TextAlign.center,
+                          style: pixelHeading(width < 520 ? 22 : 29),
                         ),
+                        const SizedBox(height: 8),
+                        const Text(
+                          'A safe preview of how suspicious and everyday texts can appear.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: pixelMuted, fontSize: 15),
+                        ),
+                        const SizedBox(height: 24),
+                        _PhonePreview(
+                          message: message,
+                          arriving: _arriving,
+                          number: _index + 1,
+                          total: _texts!.length,
+                        ),
+                        const SizedBox(height: 25),
+                        Text('SCAM OR SAFE?', style: pixelHeading(19)),
+                        const SizedBox(height: 12),
+                        Wrap(
+                          alignment: WrapAlignment.center,
+                          spacing: 12,
+                          runSpacing: 12,
+                          children: [
+                            FilledButton.icon(
+                              onPressed: _arriving || _answer != null
+                                  ? null
+                                  : () => _answerText(message, true),
+                              icon: const Icon(Icons.warning_amber_rounded),
+                              label: const Text('This is a scam'),
+                            ),
+                            OutlinedButton.icon(
+                              onPressed: _arriving || _answer != null
+                                  ? null
+                                  : () => _answerText(message, false),
+                              icon: const Icon(Icons.check_circle_outline),
+                              label: const Text('This looks safe'),
+                            ),
+                          ],
+                        ),
+                        if (_answer != null) ...[
+                          const SizedBox(height: 18),
+                          Container(
+                            width: 390,
+                            padding: const EdgeInsets.all(17),
+                            decoration:
+                                pixelPanel(correct ? pixelMint : pixelGold),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  correct
+                                      ? 'NICE CATCH!'
+                                      : 'GOOD TRY — KEEP GOING!',
+                                  style: pixelHeading(16),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  correct
+                                      ? message.explanation
+                                      : 'This one is ${message.isScam ? 'a scam' : 'legitimate'}. ${message.explanation} You can use that clue on the next text.',
+                                  style: const TextStyle(
+                                      fontSize: 15, height: 1.4),
+                                ),
+                                if (_earnedXp > 0) ...[
+                                  const SizedBox(height: 10),
+                                  Text('+$_earnedXp XP',
+                                      style: pixelHeading(13)),
+                                ] else if (_replayed) ...[
+                                  const SizedBox(height: 10),
+                                  const Text(
+                                      'This text was already counted on Home.'),
+                                ],
+                              ],
+                            ),
+                          ),
+                        ],
+                        const SizedBox(height: 18),
                         OutlinedButton.icon(
-                          onPressed: _arriving || _answer != null
-                              ? null
-                              : () => _answerText(message, false),
-                          icon: const Icon(Icons.check_circle_outline),
-                          label: const Text('This looks safe'),
+                          onPressed: _arriving ? null : _showNextText,
+                          icon: const Icon(Icons.sms_outlined),
+                          label: const Text('Send next text'),
+                        ),
+                        const SizedBox(height: 14),
+                        const Text(
+                          'These messages are fictional. Nothing is sent to a real phone.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: pixelMuted, fontSize: 13),
                         ),
                       ],
                     ),
-                    if (_answer != null) ...[
-                      const SizedBox(height: 18),
-                      Container(
-                        width: 390,
-                        padding: const EdgeInsets.all(17),
-                        decoration: pixelPanel(correct ? pixelMint : pixelGold),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              correct
-                                  ? 'NICE CATCH!'
-                                  : 'GOOD TRY — KEEP GOING!',
-                              style: pixelHeading(16),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              correct
-                                  ? message.explanation
-                                  : 'This one is ${message.isScam ? 'a scam' : 'legitimate'}. ${message.explanation} You can use that clue on the next text.',
-                              style: const TextStyle(fontSize: 15, height: 1.4),
-                            ),
-                            if (_earnedXp > 0) ...[
-                              const SizedBox(height: 10),
-                              Text('+$_earnedXp XP', style: pixelHeading(13)),
-                            ] else if (_replayed) ...[
-                              const SizedBox(height: 10),
-                              const Text(
-                                  'This text was already counted on Home.'),
-                            ],
-                          ],
-                        ),
-                      ),
-                    ],
-                    const SizedBox(height: 18),
-                    OutlinedButton.icon(
-                      onPressed: _arriving ? null : _showNextText,
-                      icon: const Icon(Icons.sms_outlined),
-                      label: const Text('Send next text'),
-                    ),
-                    const SizedBox(height: 14),
-                    const Text(
-                      'These messages are fictional. Nothing is sent to a real phone.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: pixelMuted, fontSize: 13),
-                    ),
-                  ],
+                  ),
                 ),
               ),
-            ),
-          ),
+            );
+          },
         ),
       ),
     );

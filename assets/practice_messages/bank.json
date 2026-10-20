@@ -1,0 +1,9 @@
+{
+  "id": "bank",
+  "channel": "Text",
+  "sender": "+1 (555) 010-0198",
+  "subject": "Account alert",
+  "body": "Your card is locked! Reply with the six-digit code we just sent to restore access immediately.",
+  "isScam": true,
+  "explanation": "Never share a one-time code. Open your bank’s official app or call the number on your card to check the account."
+}

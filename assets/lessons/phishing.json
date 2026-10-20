@@ -1,0 +1,39 @@
+{
+  "id": "phishing",
+  "title": "Read an email like a detective",
+  "eyebrow": "LESSON 02 · 4 MIN",
+  "description": "A phishing email may copy a brand, but its sender address, link, or request can reveal the trick. Check the details before you click.",
+  "example": "“Delivery failed. Pay $1.95 at parcel-help.example to reschedule.” If you did not expect a package, check the carrier directly.",
+  "questions": [
+    {
+      "prompt": "A delivery email asks for a small fee. What is the safest check?",
+      "answers": [
+        "Open the email link",
+        "Use the carrier’s official app",
+        "Send card details by reply"
+      ],
+      "correctIndex": 1,
+      "explanation": "Open a trusted app or type the known address yourself. Do not rely on the message link."
+    },
+    {
+      "prompt": "Which detail can expose an impersonator?",
+      "answers": [
+        "Sender address",
+        "Brand colors",
+        "A large logo"
+      ],
+      "correctIndex": 0,
+      "explanation": "A familiar design is easy to copy. Inspect the actual sender address."
+    },
+    {
+      "prompt": "The email asks you to download an unexpected invoice. What now?",
+      "answers": [
+        "Open it immediately",
+        "Forward it to friends",
+        "Verify with the sender another way"
+      ],
+      "correctIndex": 2,
+      "explanation": "Unexpected attachments can be harmful. Contact the sender through a known channel."
+    }
+  ]
+}
