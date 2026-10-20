@@ -25,10 +25,6 @@ flutter build web
 
 Progress is stored in the browser with `shared_preferences`. The prototype has no account or backend, so clearing browser site data resets progress.
 
-## Collaborating
-
-Screens and scenario data are separated by feature under `lib/features/`. See [CONTRIBUTING.md](CONTRIBUTING.md) for the folder map, branch workflow, and pull request checks.
-
 ## Scope
 
 This is a website prototype of the broader ScamShield concept. It is not the complete mobile MVP from the original project plan. The web app demonstrates the main navigation, lesson feedback, message classification, a phone response, and progress tracking. Android and iOS scaffolding can be added later with `flutter create --platforms=android,ios .`.
