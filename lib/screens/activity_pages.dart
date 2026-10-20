@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:flutter_tts/flutter_tts.dart';
 import '../data/content.dart';
 import '../widgets/pixel_theme.dart';
 
@@ -259,13 +259,58 @@ class CallPage extends StatefulWidget {
 }
 
 class _CallPageState extends State<CallPage> {
+  static const _script =
+      'I’m with your bank’s fraud team. There is a charge on your account. '
+      'Read me the six-digit code we just sent so I can stop it.';
+
   bool _answered = false;
   int? _choice;
+  final FlutterTts _tts = FlutterTts();
+
+  @override
+  void initState() {
+    super.initState();
+
+    _initTts();
+
+  }
+
+  Future<void> _initTts() async {
+    //funky ehh
+
+    // final voices = await _tts.getVoices as List?;
+    // debugPrint('Voices: $voices');
+    // final english = voices?.cast<Map>().firstWhere(
+    //       (v) => (v['locale'] as String).toLowerCase().startsWith('en'),
+    //   orElse: () => {},
+    // );
+    // if (english != null && english.isNotEmpty) {
+    //   debugPrint("using ${english['name']} and ${english['locale']} for TTS");
+    //   await _tts.setVoice({
+    //     'name': english['name'] as String,
+    //     'locale': english['locale'] as String,
+    //   });
+    // }
+    _tts.setSpeechRate(0.72);
+    _tts.setPitch(1.65);
+  }
+
+  void _callerAnswer() {
+    setState(() => _answered = true);
+    _tts.speak(_script);
+  }
 
   void _choose(int choice) {
+    _tts.stop();
     if (_choice != null) return;
     setState(() => _choice = choice);
     widget.onFinished(choice == 2);
+  }
+
+  @override
+  void dispose() {
+    _tts.stop();
+    super.dispose();
   }
 
   @override
@@ -305,7 +350,7 @@ class _CallPageState extends State<CallPage> {
                   if (!_answered) ...[
                     const SizedBox(height: 24),
                     FilledButton.icon(
-                      onPressed: () => setState(() => _answered = true),
+                      onPressed: () => _callerAnswer(),
                       icon: const Icon(Icons.call),
                       label: const Text('Answer call'),
                     ),
@@ -319,7 +364,7 @@ class _CallPageState extends State<CallPage> {
                 icon: Icons.record_voice_over_outlined,
                 title: 'Caller says',
                 text:
-                    '“I’m with your bank’s fraud team. There is a charge on your account. Read me the six-digit code we just sent so I can stop it.”',
+                    '“$_script”',
               ),
               const SizedBox(height: 25),
               Text('CHOOSE YOUR RESPONSE', style: pixelHeading(21)),
