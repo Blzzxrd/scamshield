@@ -22,10 +22,16 @@ class HomeView extends StatelessWidget {
   final List<PracticeMessage> practiceMessages;
   final VoidCallback onLearn;
   final VoidCallback onOpenTexts;
-  final VoidCallback onOpenLesson;
+  final ValueChanged<Lesson> onOpenLesson;
 
   @override
   Widget build(BuildContext context) {
+    // Find the next uncompleted lesson, or fall back to the last lesson if all are complete
+    final nextUncompletedLesson = lessons.firstWhere(
+      (lesson) => !progress.completedLessons.contains(lesson.id),
+      orElse: () => lessons.last,
+    );
+
     final textMessages =
         practiceMessages.where((message) => message.channel == 'Text').toList();
     final textReviewed = textMessages
@@ -34,6 +40,8 @@ class HomeView extends StatelessWidget {
     final textCorrect = textMessages
         .where((message) => progress.correctMessages.contains(message.id))
         .length;
+
+    final isFirstLessonCompleted = progress.completedLessons.contains('basics');
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -61,7 +69,7 @@ class HomeView extends StatelessWidget {
           style: TextStyle(fontSize: 16, color: pixelMuted),
         ),
         const SizedBox(height: 26),
-        PixelWorldBanner(onStart: onOpenLesson),
+        PixelWorldBanner(onStart: () => onOpenLesson(nextUncompletedLesson)),
         const SizedBox(height: 24),
         Container(
           width: double.infinity,
@@ -168,12 +176,10 @@ class HomeView extends StatelessWidget {
         const SizedBox(height: 16),
         ActionCard(
           icon: Icons.auto_stories_rounded,
-          title: progress.completedLessons.contains('basics')
-              ? 'Keep learning'
-              : 'Your first lesson',
+          title: isFirstLessonCompleted ? 'Keep learning' : 'Your first lesson',
           subtitle: 'Spot the warning signs in everyday messages.',
           button: 'Start lesson',
-          onPressed: onOpenLesson,
+          onPressed: () => onOpenLesson(nextUncompletedLesson),
         ),
         const SizedBox(height: 14),
         ActionCard(

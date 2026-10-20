@@ -1,0 +1,9 @@
+{
+  "id": "tax_refund",
+  "channel": "Email",
+  "sender": "Government Tax Office <noreply@tax-refund-gov.example>",
+  "subject": "Your tax refund is ready",
+  "body": "You are owed a refund of $450. Click the secure link below and enter your bank routing number to deposit it now.",
+  "isScam": true,
+  "explanation": "Government agencies rarely text or email unexpected money links requiring immediate banking details."
+}

@@ -1,0 +1,9 @@
+{
+  "id": "lottery_winner",
+  "channel": "Email",
+  "sender": "International Sweepstakes <winner@global-prizes.example>",
+  "subject": "Claim Notification",
+  "body": "You won $1,000,000 in our international email lottery. Contact our claims agent via WhatsApp to receive your funds.",
+  "isScam": true,
+  "explanation": "You cannot win a lottery you never entered. Moving conversations to WhatsApp is a major red flag."
+}

@@ -1,0 +1,9 @@
+{
+  "id": "streaming_suspension",
+  "channel": "Email",
+  "sender": "StreamFlix Support <billing@streamflix-update.example>",
+  "subject": "Account suspended: update payment",
+  "body": "Your membership has been paused due to a billing error. Update your credit card details immediately to avoid cancellation.",
+  "isScam": true,
+  "explanation": "Generic greetings, urgent threats of cancellation, and suspicious domain names are common phishing signs."
+}

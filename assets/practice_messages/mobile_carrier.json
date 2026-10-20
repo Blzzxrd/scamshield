@@ -1,0 +1,9 @@
+{
+  "id": "mobile_carrier",
+  "channel": "Text",
+  "sender": "Metro Wireless",
+  "subject": "Bill ready",
+  "body": "Your auto-pay for this month's bill was successful. Thank you for being a customer. Log into the app to view details.",
+  "isScam": false,
+  "explanation": "A standard informational notification directing you to log into the official app safely."
+}

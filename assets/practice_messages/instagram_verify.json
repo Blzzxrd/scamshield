@@ -1,0 +1,9 @@
+{
+  "id": "instagram_verify",
+  "channel": "Text",
+  "sender": "+1 (800) 555-0192",
+  "subject": "Security alert",
+  "body": "Someone tried to log into your social media account from Russia. Reply 'STOP' or click here to secure your profile.",
+  "isScam": true,
+  "explanation": "Unsolicited security alerts with unverified links are often used to steal login credentials."
+}

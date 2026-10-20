@@ -222,7 +222,7 @@ class _AppShellState extends State<AppShell> {
               practiceMessages: practiceMessages,
               onLearn: () => setState(() => _tab = 1),
               onOpenTexts: _openTextSimulation,
-              onOpenLesson: () => _openLesson(lessons.first),
+              onOpenLesson: _openLesson,
             ),
           1 => LearnView(
               progress: progress,

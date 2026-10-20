@@ -1,0 +1,9 @@
+{
+  "id": "bank_fraud_alert",
+  "channel": "Text",
+  "sender": "SecureBank Fraud Dept",
+  "subject": "Suspicious charge",
+  "body": "Did you spend $499.99 at Electronics Depot? If NOT, reply with your mobile banking password immediately to cancel it.",
+  "isScam": true,
+  "explanation": "Banks will never ask for your password or PIN via text message."
+}

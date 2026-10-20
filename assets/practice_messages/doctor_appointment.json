@@ -1,0 +1,9 @@
+{
+  "id": "doctor_appointment",
+  "channel": "Text",
+  "sender": "City Medical Clinic",
+  "subject": "Appointment reminder",
+  "body": "Reminder: You have a check-up tomorrow at 3:15 PM. Reply C to confirm or call 555-0144 to reschedule.",
+  "isScam": false,
+  "explanation": "A standard medical reminder with a public phone number to verify rather than a sketchy link."
+}

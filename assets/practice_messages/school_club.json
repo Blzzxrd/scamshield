@@ -1,0 +1,9 @@
+{
+  "id": "school_club",
+  "channel": "Text",
+  "sender": "Chess Club Leader",
+  "subject": "Meeting room change",
+  "body": "Hey everyone! Room 204 is locked today, so we are meeting in the library conference room after school. See you there!",
+  "isScam": false,
+  "explanation": "A casual, expected message from a peer with no links, money requests, or pressure."
+}

@@ -1,0 +1,9 @@
+{
+  "id": "crypto_giveaway",
+  "channel": "Email",
+  "sender": "CryptoMoon <giveaway@moon-rewards.example>",
+  "subject": "You won 2 BTC!",
+  "body": "Congratulations! You have been selected for our community airdrop. Send 0.1 BTC to verify your wallet and claim your prize.",
+  "isScam": true,
+  "explanation": "Classic advance-fee scam. If something sounds too good to be True and requires you to send money first, it is a scam."
+}

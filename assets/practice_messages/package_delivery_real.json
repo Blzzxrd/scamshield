@@ -1,0 +1,9 @@
+{
+  "id": "package_delivery_real",
+  "channel": "Text",
+  "sender": "USPS Tracking",
+  "subject": "Out for delivery",
+  "body": "Your package with tracking #9400 is out for delivery today by 5 PM. Track it in the official carrier app.",
+  "isScam": false,
+  "explanation": "A general tracking notice that directs you to official channels rather than asking for payment or codes."
+}

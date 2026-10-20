@@ -1,0 +1,9 @@
+{
+  "id": "game_store",
+  "channel": "Email",
+  "sender": "PlayVerse Store <receipts@playverse-official.example>",
+  "subject": "Receipt for your purchase",
+  "body": "Thank you for purchasing 'Pixel Quest'. Your digital key is: PQ-8832-9911. View your library anytime in the app.",
+  "isScam": false,
+  "explanation": "A standard purchase confirmation matching an action you took, with no malicious links or pressure."
+}

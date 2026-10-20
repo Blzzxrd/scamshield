@@ -1,0 +1,9 @@
+{
+  "id": "friend_money_emergency",
+  "channel": "Text",
+  "sender": "Alex (Friend)",
+  "subject": "Emergency",
+  "body": "Hey, I'm stuck in a bad situation and my card isn't working. Can you Venmo me $50 right now? I'll pay you back tomorrow!",
+  "isScam": true,
+  "explanation": "Account takeovers often result in messages like this asking friends for money. Always verify by calling them directly."
+}

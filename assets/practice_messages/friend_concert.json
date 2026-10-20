@@ -1,0 +1,9 @@
+{
+  "id": "friend_concert",
+  "channel": "Text",
+  "sender": "Maya",
+  "subject": "Tickets",
+  "body": "Are you still down for the indie concert next Friday? Let me know so I can buy our digital passes!",
+  "isScam": false,
+  "explanation": "Normal conversation from a friend you know, asking about shared plans without asking for personal codes or passwords."
+}

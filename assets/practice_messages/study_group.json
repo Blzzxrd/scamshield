@@ -1,0 +1,9 @@
+{
+  "id": "study_group",
+  "channel": "Text",
+  "sender": "Jordan (Classmate)",
+  "subject": "History notes",
+  "body": "Hey! Did you get the notes from yesterday's lecture? I missed class because I was sick.",
+  "isScam": false,
+  "explanation": "An ordinary request from a classmate with no security risks."
+}

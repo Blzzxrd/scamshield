@@ -1,0 +1,9 @@
+{
+  "id": "free_giftcard",
+  "channel": "Email",
+  "sender": "SurveyRewards <rewards@opinion-poll-win.example>",
+  "subject": "Claim your $100 gift card!",
+  "body": "You've been chosen to receive a $100 store gift card. Just pay $1.99 shipping and handling to claim it!",
+  "isScam": true,
+  "explanation": "Small shipping fees for 'free' gift cards are a trap to steal credit card numbers."
+}

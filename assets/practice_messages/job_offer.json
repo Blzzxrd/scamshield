@@ -1,0 +1,9 @@
+{
+  "id": "job_offer",
+  "channel": "Email",
+  "sender": "Recruiting Team <hr@remote-job-opportunity.example>",
+  "subject": "Work from home offer - $35/hr",
+  "body": "We reviewed your resume and want to hire you instantly as a data entry specialist. Reply with your full name, address, and SSN to start.",
+  "isScam": true,
+  "explanation": "Real employers do not hire without interviews, nor do they ask for sensitive info like your SSN over casual email."
+}

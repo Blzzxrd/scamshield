@@ -1,0 +1,9 @@
+{
+  "id": "family_grocery",
+  "channel": "Text",
+  "sender": "Mom",
+  "subject": "Groceries",
+  "body": "Can you pick up a gallon of milk and some bread on your way home from practice? Love you!",
+  "isScam": false,
+  "explanation": "A typical message from a family member with no suspicious requests."
+}

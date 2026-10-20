@@ -1,0 +1,9 @@
+{
+  "id": "club_meeting",
+  "channel": "Email",
+  "sender": "School Robotics Club",
+  "subject": "Saturday workshop reminder",
+  "body": "Reminder that our weekend build session is this Saturday from 10 AM to 2 PM in the STEM lab. Pizza will be provided.",
+  "isScam": false,
+  "explanation": "A legitimate school communication from a known address with clear, safe details."
+}

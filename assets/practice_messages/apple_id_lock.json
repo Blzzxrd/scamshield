@@ -1,0 +1,9 @@
+{
+  "id": "apple_id_lock",
+  "channel": "Email",
+  "sender": "Apple Support <support@apple-id-security-check.example>",
+  "subject": "Your Apple ID has been locked",
+  "body": "Due to multiple incorrect login attempts, your Apple ID is locked. Verify your identity within 24 hours at apple-id-secure.example.",
+  "isScam": true,
+  "explanation": "The fake domain name and urgent countdown timer indicate a phishing attempt to steal Apple credentials."
+}

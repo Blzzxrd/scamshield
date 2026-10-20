@@ -25,26 +25,38 @@ class PracticeView extends StatefulWidget {
 }
 
 class _PracticeViewState extends State<PracticeView> {
-  bool _showCompleted = false;
+  // Tab states: false = Inbox / Pending, true = Completed
+  bool _showCompletedTexts = false;
+  bool _showCompletedCalls = false;
+  bool _showCompletedEmails = false;
 
   @override
   Widget build(BuildContext context) {
-    // Filter email messages
+    // Categorize Messages by Channel
+    final textMessages = widget.practiceMessages
+        .where((message) => message.channel == 'Text')
+        .toList();
+
+    final pendingTexts = textMessages
+        .where((m) => !widget.progress.reviewedMessages.contains(m.id))
+        .toList();
+    final completedTexts = textMessages
+        .where((m) => widget.progress.reviewedMessages.contains(m.id))
+        .toList();
+
     final emailMessages = widget.practiceMessages
         .where((message) => message.channel == 'Email')
         .toList();
 
-    final inboxMessages = emailMessages
-        .where(
-            (message) => !widget.progress.reviewedMessages.contains(message.id))
+    final pendingEmails = emailMessages
+        .where((m) => !widget.progress.reviewedMessages.contains(m.id))
+        .toList();
+    final completedEmails = emailMessages
+        .where((m) => widget.progress.reviewedMessages.contains(m.id))
         .toList();
 
-    final completedMessages = emailMessages
-        .where(
-            (message) => widget.progress.reviewedMessages.contains(message.id))
-        .toList();
-
-    final currentList = _showCompleted ? completedMessages : inboxMessages;
+    final currentEmails =
+        _showCompletedEmails ? completedEmails : pendingEmails;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -54,103 +66,126 @@ class _PracticeViewState extends State<PracticeView> {
           subtitle: 'Every message and call here is fictional.',
         ),
         const SizedBox(height: 24),
-        ActionCard(
-          icon: Icons.sms_rounded,
-          title: 'Text imitation',
-          subtitle: 'Watch simulated texts arrive on a phone.',
-          button: 'Open phone',
-          onPressed: widget.onOpenTextSimulation,
+
+        // ---------------------------------------------------------------------
+        // SECTION 1: TEXT SIMULATION
+        // ---------------------------------------------------------------------
+        const Text(
+          'TEXT MESSAGE SIMULATION',
+          style: TextStyle(
+              fontFamily: 'Silkscreen', fontSize: 20, color: pixelInk),
+        ),
+        const SizedBox(height: 10),
+        _buildToggleBar(
+          leftLabel: 'PENDING (${pendingTexts.length})',
+          rightLabel: 'COMPLETED (${completedTexts.length})',
+          showRight: _showCompletedTexts,
+          onToggle: (showRight) =>
+              setState(() => _showCompletedTexts = showRight),
         ),
         const SizedBox(height: 14),
-        ActionCard(
-          icon: Icons.call_rounded,
-          title: 'Incoming call simulation',
-          subtitle: widget.progress.callCompleted
-              ? 'Completed · Replay the scenario'
-              : 'A “bank” caller asks you to act fast.',
-          button: 'Answer call',
-          onPressed: widget.onOpenCall,
+        if (!_showCompletedTexts) ...[
+          if (pendingTexts.isNotEmpty)
+            ActionCard(
+              icon: Icons.sms_rounded,
+              title: 'Text imitation',
+              subtitle:
+                  '${pendingTexts.length} new text scenario(s) waiting for review.',
+              button: 'Open phone',
+              onPressed: widget.onOpenTextSimulation,
+            )
+          else
+            _buildEmptyState('All texts completed! Check the completed tab.'),
+        ] else ...[
+          if (completedTexts.isNotEmpty)
+            ActionCard(
+              icon: Icons.sms_rounded,
+              title: 'Replay texts',
+              subtitle:
+                  'You have reviewed ${completedTexts.length} text message(s).',
+              button: 'Replay phone',
+              onPressed: widget.onOpenTextSimulation,
+            )
+          else
+            _buildEmptyState('No completed text scenarios yet.'),
+        ],
+
+        const SizedBox(height: 32),
+
+        // ---------------------------------------------------------------------
+        // SECTION 2: PHONE CALL SIMULATION
+        // ---------------------------------------------------------------------
+        const Text(
+          'PHONE CALL SIMULATION',
+          style: TextStyle(
+              fontFamily: 'Silkscreen', fontSize: 20, color: pixelInk),
         ),
-        const SizedBox(height: 30),
+        const SizedBox(height: 10),
+        _buildToggleBar(
+          leftLabel: 'PENDING (${widget.progress.callCompleted ? 0 : 1})',
+          rightLabel: 'COMPLETED (${widget.progress.callCompleted ? 1 : 0})',
+          showRight: _showCompletedCalls,
+          onToggle: (showRight) =>
+              setState(() => _showCompletedCalls = showRight),
+        ),
+        const SizedBox(height: 14),
+        if (!_showCompletedCalls) ...[
+          if (!widget.progress.callCompleted)
+            ActionCard(
+              icon: Icons.call_rounded,
+              title: 'Incoming call simulation',
+              subtitle: 'A “bank” caller asks you to act fast.',
+              button: 'Answer call',
+              onPressed: widget.onOpenCall,
+            )
+          else
+            _buildEmptyState(
+                'Call scenario completed! Check the completed tab.'),
+        ] else ...[
+          if (widget.progress.callCompleted)
+            ActionCard(
+              icon: Icons.call_rounded,
+              title: 'Incoming call simulation',
+              subtitle: 'Completed · Replay the scenario anytime.',
+              button: 'Replay call',
+              onPressed: widget.onOpenCall,
+            )
+          else
+            _buildEmptyState('No completed call scenarios yet.'),
+        ],
+
+        const SizedBox(height: 32),
+
+        // ---------------------------------------------------------------------
+        // SECTION 3: EMAIL INBOX
+        // ---------------------------------------------------------------------
         const Text(
           'SIMULATED EMAIL INBOX',
           style: TextStyle(
-              fontFamily: 'Silkscreen', fontSize: 22, color: pixelInk),
+              fontFamily: 'Silkscreen', fontSize: 20, color: pixelInk),
         ),
         const SizedBox(height: 4),
         const Text(
           'Open an email and decide whether it looks safe.',
           style: TextStyle(color: pixelMuted),
         ),
-        const SizedBox(height: 16),
-        // Toggle Switcher for Inbox / Completed Tabs
-        Row(
-          children: [
-            Expanded(
-              child: GestureDetector(
-                onTap: () => setState(() => _showCompleted = false),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  decoration: pixelPanel(
-                    !_showCompleted ? pixelGold : pixelCream,
-                    shadow: false,
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    'INBOX (${inboxMessages.length})',
-                    style: const TextStyle(
-                      fontFamily: 'Silkscreen',
-                      fontSize: 12,
-                      color: pixelInk,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: GestureDetector(
-                onTap: () => setState(() => _showCompleted = true),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  decoration: pixelPanel(
-                    _showCompleted ? pixelGold : pixelCream,
-                    shadow: false,
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    'COMPLETED (${completedMessages.length})',
-                    style: const TextStyle(
-                      fontFamily: 'Silkscreen',
-                      fontSize: 12,
-                      color: pixelInk,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
+        const SizedBox(height: 10),
+        _buildToggleBar(
+          leftLabel: 'INBOX (${pendingEmails.length})',
+          rightLabel: 'COMPLETED (${completedEmails.length})',
+          showRight: _showCompletedEmails,
+          onToggle: (showRight) =>
+              setState(() => _showCompletedEmails = showRight),
         ),
         const SizedBox(height: 16),
-        if (currentList.isEmpty)
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(24),
-            decoration: pixelPanel(pixelCream),
-            alignment: Alignment.center,
-            child: Text(
-              _showCompleted
-                  ? 'No completed emails yet.'
-                  : 'All caught up! No pending emails.',
-              style: const TextStyle(
-                color: pixelMuted,
-                fontFamily: 'Silkscreen',
-                fontSize: 13,
-              ),
-            ),
+        if (currentEmails.isEmpty)
+          _buildEmptyState(
+            _showCompletedEmails
+                ? 'No completed emails yet.'
+                : 'All caught up! No pending emails.',
           )
         else
-          for (final message in currentList) ...[
+          for (final message in currentEmails) ...[
             Card(
               child: ListTile(
                 contentPadding: const EdgeInsets.symmetric(
@@ -182,6 +217,81 @@ class _PracticeViewState extends State<PracticeView> {
             const SizedBox(height: 8),
           ],
       ],
+    );
+  }
+
+  /// Helper widget to render pixel-styled tab toggles.
+  Widget _buildToggleBar({
+    required String leftLabel,
+    required String rightLabel,
+    required bool showRight,
+    required ValueChanged<bool> onToggle,
+  }) {
+    return Row(
+      children: [
+        Expanded(
+          child: GestureDetector(
+            onTap: () => onToggle(false),
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              decoration: pixelPanel(
+                !showRight ? pixelGold : pixelCream,
+                shadow: false,
+              ),
+              alignment: Alignment.center,
+              child: Text(
+                leftLabel,
+                style: const TextStyle(
+                  fontFamily: 'Silkscreen',
+                  fontSize: 11,
+                  color: pixelInk,
+                ),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: GestureDetector(
+            onTap: () => onToggle(true),
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              decoration: pixelPanel(
+                showRight ? pixelGold : pixelCream,
+                shadow: false,
+              ),
+              alignment: Alignment.center,
+              child: Text(
+                rightLabel,
+                style: const TextStyle(
+                  fontFamily: 'Silkscreen',
+                  fontSize: 11,
+                  color: pixelInk,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Helper widget for rendering empty state cards.
+  Widget _buildEmptyState(String text) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(24),
+      decoration: pixelPanel(pixelCream),
+      alignment: Alignment.center,
+      child: Text(
+        text,
+        textAlign: TextAlign.center,
+        style: const TextStyle(
+          color: pixelMuted,
+          fontFamily: 'Silkscreen',
+          fontSize: 12,
+        ),
+      ),
     );
   }
 }

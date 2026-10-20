@@ -1,0 +1,9 @@
+{
+  "id": "tech_support_popup",
+  "channel": "Email",
+  "sender": "Microsoft Security <alert@windows-tech-fix.example>",
+  "subject": "Critical Virus Detected!",
+  "body": "Your computer is infected with 14 trojans! Call our toll-free support line immediately at 1-800-555-0199 to clean your system.",
+  "isScam": true,
+  "explanation": "Scare tactics trying to trick you into calling a fake tech support line to steal remote access or money."
+}
