@@ -217,7 +217,7 @@ class _TextSimulationPageState extends State<TextSimulationPage> {
   }
 }
 
-class _PhonePreview extends StatelessWidget {
+class _PhonePreview extends StatelessWidget { //this is currently static
   const _PhonePreview({
     required this.message,
     required this.arriving,

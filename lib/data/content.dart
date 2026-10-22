@@ -23,6 +23,90 @@ class QuizQuestion {
     );
   }
 }
+class PracticeCall {
+  const PracticeCall({
+    required this.id,
+    required this.startNode,
+    required this.nodes,
+    required this.caller,
+  });
+
+  final String id;
+  final String startNode;
+  final Map<String, CallNode> nodes;
+  final String caller;
+
+  factory PracticeCall.fromJson(Map<String, dynamic> json) {
+    final rawNodes = json['nodes'] as Map<String, dynamic>;
+    final nodes = rawNodes.map(
+      (id, value) => MapEntry(
+        id,
+        CallNode.fromJson(value as Map<String, dynamic>),
+      ),
+    );
+
+    final scenario = PracticeCall(
+      id: json['id'] as String,
+      caller: json['caller'] as String,
+      startNode: json['startNode'] as String,
+      nodes: nodes,
+    );
+
+    if (!nodes.containsKey(scenario.startNode)) {
+      throw FormatException('Call ${scenario.id} has an unknown start node.');
+    }
+    for (final node in nodes.values) {
+      for (final choice in node.choices) {
+        if (choice.nextNode != null && !nodes.containsKey(choice.nextNode)) {
+          throw FormatException(
+            'Call ${scenario.id} references unknown node ${choice.nextNode}.',
+          );
+        }
+      }
+    }
+    return scenario;
+  }
+}
+
+class CallNode {
+  const CallNode({
+    required this.callerLine,
+    required this.choices,
+  });
+  final String callerLine;
+  final List<CallChoice> choices;
+  factory CallNode.fromJson(Map<String, dynamic> json) => CallNode(
+        callerLine: json['callerLine'] as String,
+        choices: (json['choices'] as List<dynamic>)
+            .map((choice) =>
+                CallChoice.fromJson(choice as Map<String, dynamic>))
+            .toList(),
+      );
+}
+
+class CallChoice {
+  const CallChoice({
+    required this.question,
+    required this.response,
+    required this.nextNode,
+    this.safeEnding = false,
+    this.explanation,
+  });
+
+  final String question;
+  final String response;
+  final String? nextNode;
+  final bool safeEnding;
+  final String? explanation;
+
+  factory CallChoice.fromJson(Map<String, dynamic> json) => CallChoice(
+        question: json['question'] as String,
+        response: json['response'] as String,
+        nextNode: json['nextNode'] as String?,
+        safeEnding: json['safeEnding'] as bool? ?? json['outcome'] == 'safe',
+        explanation: json['explanation'] as String?,
+      );
+}
 
 class Lesson {
   const Lesson({
@@ -133,5 +217,26 @@ class ContentLoader {
     }
 
     return messages;
+  }
+
+  // Dynamically load all practice call JSON files from the assets/call_paths/ folder
+  static Future<List<PracticeCall>> loadPracticeCalls() async {
+    final AssetManifest assetManifest =
+        await AssetManifest.loadFromAssetBundle(rootBundle);
+
+    final List<String> callKeys = assetManifest
+        .listAssets()
+        .where((String key) =>
+            key.startsWith('assets/call_paths/') && key.endsWith('.json'))
+        .toList();
+
+    List<PracticeCall> calls = [];
+    for (String key in callKeys) {
+      final String jsonString = await rootBundle.loadString(key);
+      final Map<String, dynamic> jsonData = json.decode(jsonString);
+      calls.add(PracticeCall.fromJson(jsonData));
+    }
+
+    return calls;
   }
 }

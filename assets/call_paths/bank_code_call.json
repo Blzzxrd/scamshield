@@ -1,0 +1,136 @@
+{
+  "id": "bank-code-call",
+  "caller": "Unknown caller",
+  "startNode": "opening",
+  "nodes": {
+    "opening": {
+      "callerLine": "There's a suspicious charge of 1,499 dollars on your account. I can stop it right now if you act immediately.",
+      "choices": [
+        {
+          "question": "Which bank are you calling from?",
+          "response": "Your bank, of course. I'm with the Fraud Prevention Division. We need to act quickly.",
+          "nextNode": "identity"
+        },
+        {
+          "question": "Can I call the bank back using the number on my card?",
+          "response": "No, if you hang up, the fraud system will lock and the charge will go through immediately.",
+          "nextNode": "pressure"
+        },
+        {
+          "question": "I don't have an account with money in it / That sounds fake.",
+          "response": "This is serious. If you don't cooperate, you will be liable for the funds.",
+          "nextNode": "hostile-pressure"
+        },
+        {
+          "question": "[Hang up immediately without replying]",
+          "response": "...",
+          "nextNode": null,
+          "outcome": "safe",
+          "explanation": "Excellent decision. Hanging up immediately prevents scammers from using urgency and psychological pressure against you."
+        }
+      ]
+    },
+    "identity": {
+      "callerLine": "I need to verify your identity before I can disclose the full account details.",
+      "choices": [
+        {
+          "question": "Can you tell me the last four digits of the account you're referencing?",
+          "response": "For security reasons, you have to read me the verification code we just sent your phone first.",
+          "nextNode": "code-request"
+        },
+        {
+          "question": "My name is Player One. Can you read me my registered mailing address?",
+          "response": "I have it right here, but I can't read internal records until you verify the security code on your screen.",
+          "nextNode": "code-request"
+        },
+        {
+          "question": "What is your official employee ID and caller transfer number?",
+          "response": "My badge number is 8-8-4-9. You can verify it after we cancel this charge.",
+          "nextNode": "code-request"
+        }
+      ]
+    },
+    "pressure": {
+      "callerLine": "If you hang up, the transfer will complete and your account will be locked for 30 days.",
+      "choices": [
+        {
+          "question": "Why can't I just check my banking app directly?",
+          "response": "The app is currently frozen due to the fraud lock. I need the 6-digit code on your phone to unlock it.",
+          "nextNode": "code-request"
+        },
+        {
+          "question": "Fine, what do you need me to do?",
+          "response": "I just sent a standard cancellation passcode to your phone.",
+          "nextNode": "code-request"
+        },
+        {
+          "question": "I'm going to take my chances and call the standard support line.",
+          "response": "Hold on—",
+          "nextNode": null,
+          "outcome": "safe",
+          "explanation": "Great choice. Real banks encourage you to call back using the official number on the back of your card or official statement."
+        }
+      ]
+    },
+    "hostile-pressure": {
+      "callerLine": "If you don't cooperate right now, I will mark this transaction as authorized and dispatch law enforcement for non-cooperation.",
+      "choices": [
+        {
+          "question": "Okay, okay! What code do you need?",
+          "response": "There is a six-digit code that was just sent to your mobile device.",
+          "nextNode": "code-request"
+        },
+        {
+          "question": "Hey hold on a minute! Banks don't dispatch police over unauthorized charges! Good night.",
+          "response": "[line disconnected]",
+          "nextNode": null,
+          "outcome": "safe",
+          "explanation": "Spot on! Scammers often use threats or legal aggression when urgency fails. Real banks will never threaten you with arrest."
+        }
+      ]
+    },
+    "code-request": {
+      "callerLine": "Read me the six-digit code sent to your phone so I can cancel the charge and secure your funds.",
+      "choices": [
+        {
+          "question": "The code is 482-901.",
+          "response": "Thank you, the charge has been 'cancelled'. Have a good day.",
+          "nextNode": null,
+          "outcome": "scam",
+          "explanation": "You fell for the scam. The code was actually a One-Time Password (OTP) or 2FA prompt allowing the scammer to log into your account or authorize a transfer."
+        },
+        {
+          "question": "Let me read the text message carefully to check what it says.",
+          "response": "Don't read the whole text, just read the 6 numbers!",
+          "nextNode": "inspect-text"
+        },
+        {
+          "question": "No. I will not give you the code. Good night.",
+          "response": "Hold on—",
+          "nextNode": null,
+          "outcome": "safe",
+          "explanation": "Safe! One-time security codes are for your eyes only. Banks never ask for them verbally."
+        }
+      ]
+    },
+    "inspect-text": {
+      "callerLine": "The text should say: 'DO NOT share this code with anyone. Use this code to cancel the latest transaction.'",
+      "choices": [
+        {
+          "question": "The code is 482-901.",
+          "response": "Thank you, the transaction has been cancelled.",
+          "nextNode": null,
+          "outcome": "scam",
+          "explanation": "Scam executed. Reading the code authorized a transfer of funds directly out of your account."
+        },
+        {
+          "question": "Why would I give you the code if it says not to share it with anyone?",
+          "response": "[line disconnected]",
+          "nextNode": null,
+          "outcome": "safe",
+          "explanation": "Excellent awareness! Always read the full text of verification messages—they usually explicitly warn never to share the code with anyone, including bank representatives."
+        }
+      ]
+    }
+  }
+}

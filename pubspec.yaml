@@ -21,6 +21,7 @@ flutter:
   assets:
     - assets/lessons/
     - assets/practice_messages/
+    - assets/call_paths/
   uses-material-design: true
   fonts:
     - family: Silkscreen

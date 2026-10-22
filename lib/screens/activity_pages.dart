@@ -251,9 +251,12 @@ class _MessagePageState extends State<MessagePage> {
 class CallPage extends StatefulWidget {
   const CallPage({
     super.key,
+    required this.scenario,
     required this.alreadyCompleted,
     required this.onFinished,
   });
+
+  final PracticeCall scenario;
   final bool alreadyCompleted;
   final ValueChanged<bool> onFinished;
 
@@ -262,52 +265,74 @@ class CallPage extends StatefulWidget {
 }
 
 class _CallPageState extends State<CallPage> {
-  static const _script =
-      'I’m with your bank’s fraud team. There is a charge on your account. '
-      'Read me the six-digit code we just sent so I can stop it.';
-
+  late String _nodeId;
+  CallChoice? _selected;
+  bool _finished = false;
   bool _answered = false;
-  int? _choice;
+  bool _isSpeaking = false;
   final FlutterTts _tts = FlutterTts();
 
   @override
   void initState() {
     super.initState();
-
+    _nodeId = widget.scenario.startNode;
     _initTts();
-
   }
 
   Future<void> _initTts() async {
-    //funky ehh
-
-    // final voices = await _tts.getVoices as List?;
-    // debugPrint('Voices: $voices');
-    // final english = voices?.cast<Map>().firstWhere(
-    //       (v) => (v['locale'] as String).toLowerCase().startsWith('en'),
-    //   orElse: () => {},
-    // );
-    // if (english != null && english.isNotEmpty) {
-    //   debugPrint("using ${english['name']} and ${english['locale']} for TTS");
-    //   await _tts.setVoice({
-    //     'name': english['name'] as String,
-    //     'locale': english['locale'] as String,
-    //   });
-    // }
-    _tts.setSpeechRate(0.72);
-    _tts.setPitch(1.65);
+    await _tts.setSpeechRate(0.72);
+    await _tts.setPitch(1.65);
+    await _tts.awaitSpeakCompletion(true);
+    _tts.setStartHandler(() {
+      if (mounted) setState(() => _isSpeaking = true);
+    });
+    _tts.setCompletionHandler(() {
+      if (mounted) setState(() => _isSpeaking = false);
+    });
+    _tts.setCancelHandler(() {
+      if (mounted) setState(() => _isSpeaking = false);
+    });
   }
 
-  void _callerAnswer() {
+  Future<void> _answerCall() async {
+    final node = widget.scenario.nodes[_nodeId]!;
     setState(() => _answered = true);
-    _tts.speak(_script);
+    await _speak(node.callerLine);
   }
 
-  void _choose(int choice) {
-    _tts.stop();
-    if (_choice != null) return;
-    setState(() => _choice = choice);
-    widget.onFinished(choice == 2);
+  Future<void> _choose(CallChoice choice) async {
+    if (_selected != null || _finished || _isSpeaking) return;
+    setState(() => _selected = choice);
+    await _speak(choice.response);
+  }
+
+  Future<void> _continue() async {
+    final choice = _selected;
+    if (choice == null || _finished || _isSpeaking) return;
+
+    final nextNode = choice.nextNode;
+    if (nextNode != null) {
+      final nextLine = widget.scenario.nodes[nextNode]!.callerLine;
+      setState(() {
+        _nodeId = nextNode;
+        _selected = null;
+      });
+      await _speak(nextLine);
+      return;
+    }
+
+    setState(() => _finished = true);
+    widget.onFinished(choice.safeEnding);
+  }
+
+  Future<void> _speak(String text) async {
+    if (!mounted) return;
+    setState(() => _isSpeaking = true);
+    try {
+      await _tts.speak(text);
+    } finally {
+      if (mounted) setState(() => _isSpeaking = false);
+    }
   }
 
   @override
@@ -317,8 +342,12 @@ class _CallPageState extends State<CallPage> {
   }
 
   @override
-  Widget build(BuildContext context) => _ActivityScaffold(
-        title: 'Incoming call',
+  Widget build(BuildContext context) {
+    final node = widget.scenario.nodes[_nodeId]!;
+    final selected = _selected;
+
+    return _ActivityScaffold(
+        title: widget.scenario.caller,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -335,9 +364,10 @@ class _CallPageState extends State<CallPage> {
                     child: const Icon(Icons.call, color: pixelInk, size: 34),
                   ),
                   const SizedBox(height: 14),
-                  const Text(
-                    'UNKNOWN CALLER',
-                    style: TextStyle(
+                  Text(
+                    widget.scenario.caller.toUpperCase(),
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
                       color: pixelCream,
                       fontFamily: 'Silkscreen',
                       fontSize: 22,
@@ -353,7 +383,7 @@ class _CallPageState extends State<CallPage> {
                   if (!_answered) ...[
                     const SizedBox(height: 24),
                     FilledButton.icon(
-                      onPressed: () => _callerAnswer(),
+                      onPressed: _isSpeaking ? null : _answerCall,
                       icon: const Icon(Icons.call),
                       label: const Text('Answer call'),
                     ),
@@ -365,53 +395,63 @@ class _CallPageState extends State<CallPage> {
               const SizedBox(height: 24),
               _NoteCard(
                 icon: Icons.record_voice_over_outlined,
-                title: 'Caller says',
-                text:
-                    '“$_script”',
+                title: widget.scenario.caller,
+                text: '“${node.callerLine}”',
               ),
-              const SizedBox(height: 25),
-              Text('CHOOSE YOUR RESPONSE', style: pixelHeading(21)),
-              const SizedBox(height: 14),
-              _ChoiceButton(
-                text: 'Read the code so the charge can be stopped',
-                selected: _choice == 0,
-                disabled: _choice != null,
-                onPressed: () => _choose(0),
-              ),
-              const SizedBox(height: 10),
-              _ChoiceButton(
-                text: 'Ask the caller for their employee ID',
-                selected: _choice == 1,
-                disabled: _choice != null,
-                onPressed: () => _choose(1),
-              ),
-              const SizedBox(height: 10),
-              _ChoiceButton(
-                text: 'Hang up and call the number on my card',
-                selected: _choice == 2,
-                disabled: _choice != null,
-                onPressed: () => _choose(2),
-              ),
-              if (_choice != null) ...[
+              if (_finished && selected != null) ...[
                 const SizedBox(height: 24),
                 _NoteCard(
-                  icon: _choice == 2
+                  icon: selected.safeEnding
                       ? Icons.check_circle_outline
                       : Icons.info_outline,
-                  title: _choice == 2 ? 'Safe choice' : 'Try a safer route',
-                  text:
-                      'A caller can spoof a bank number and invent an employee ID. Never read a one-time code aloud. Hang up, then contact your bank using the number printed on your card.${_choice == 2 && !widget.alreadyCompleted ? ' +20 XP' : ''}',
+                  title: selected.safeEnding
+                      ? 'Safe choice'
+                      : 'Try a safer route',
+                  text: '${selected.explanation ?? ''}'
+                      '${selected.safeEnding && !widget.alreadyCompleted ? ' +20 XP' : ''}',
                 ),
                 const SizedBox(height: 20),
                 FilledButton(
                   onPressed: () => Navigator.pop(context),
                   child: const Text('Finish simulation'),
                 ),
-              ],
+              ] else if (selected != null) ...[
+                const SizedBox(height: 16),
+                _NoteCard(
+                  icon: Icons.chat_bubble_outline,
+                  title: 'You ask',
+                  text: selected.question,
+                ),
+                const SizedBox(height: 12),
+                _NoteCard(
+                  icon: Icons.record_voice_over_outlined,
+                  title: 'Caller replies',
+                  text: selected.response,
+                ),
+                const SizedBox(height: 20),
+                FilledButton(
+                  onPressed: _isSpeaking ? null : _continue,
+                  child: const Text('Continue'),
+                ),
+              ] else ...[
+                const SizedBox(height: 25),
+                Text('CHOOSE A QUESTION', style: pixelHeading(21)),
+                const SizedBox(height: 14),
+                for (final choice in node.choices) ...[
+                  _ChoiceButton(
+                    text: choice.question,
+                    selected: false,
+                    disabled: false,
+                    onPressed: () => _choose(choice),
+                  ),
+                  const SizedBox(height: 10),
+                ],
+              ]
             ],
           ],
         ),
       );
+  }
 }
 
 class _ActivityScaffold extends StatelessWidget {

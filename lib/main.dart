@@ -95,6 +95,7 @@ class _AppShellState extends State<AppShell> {
   AppProgress? _progress;
   List<Lesson>? _lessons;
   List<PracticeMessage>? _practiceMessages;
+  List<PracticeCall>? _practiceCalls;
   int _tab = 0;
 
   @override
@@ -107,12 +108,14 @@ class _AppShellState extends State<AppShell> {
     final progress = await _store.load();
     final lessons = await ContentLoader.loadLessons();
     final practiceMessages = await ContentLoader.loadPracticeMessages();
+    final practiceCalls = await ContentLoader.loadPracticeCalls();
 
     if (mounted) {
       setState(() {
         _progress = progress;
         _lessons = lessons;
         _practiceMessages = practiceMessages;
+        _practiceCalls = practiceCalls;
       });
     }
   }
@@ -178,6 +181,7 @@ class _AppShellState extends State<AppShell> {
       context,
       MaterialPageRoute<void>(
         builder: (_) => CallPage(
+          scenario: _practiceCalls!.first,
           alreadyCompleted: _progress!.callCompleted,
           onFinished: _finishCall,
         ),
@@ -203,9 +207,13 @@ class _AppShellState extends State<AppShell> {
     final progress = _progress;
     final lessons = _lessons;
     final practiceMessages = _practiceMessages;
+    final practiceCalls = _practiceCalls;
 
     // Show a loading indicator until user progress and JSON assets are loaded
-    if (progress == null || lessons == null || practiceMessages == null) {
+    if (progress == null ||
+        lessons == null ||
+        practiceMessages == null ||
+        practiceCalls == null) {
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
       );
