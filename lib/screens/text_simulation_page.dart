@@ -366,23 +366,6 @@ class _PhonePreview extends StatelessWidget {
                     ),
                   ),
                 ),
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  decoration: const BoxDecoration(
-                    color: pixelCream,
-                    border: Border(top: BorderSide(color: pixelInk, width: 2)),
-                  ),
-                  child: const Text(
-                    'SIMULATION ONLY  ·  REPLIES DISABLED',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontFamily: 'Silkscreen',
-                      fontSize: 10,
-                      color: pixelMuted,
-                    ),
-                  ),
-                ),
               ],
             ),
           ),
