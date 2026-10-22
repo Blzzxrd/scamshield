@@ -1,0 +1,9 @@
+{
+  "id": "requested_signin_code",
+  "channel": "Text",
+  "sender": "Community Center Portal",
+  "subject": "Your sign-in code",
+  "body": "The sign-in code you just requested in the community center app is 472618. Never share this code, even with support staff.",
+  "isScam": false,
+  "explanation": "A code you requested in the app can be expected, and this text does not ask you to send it anywhere. Keep the code private; if you did not request it, check your account through the app."
+}

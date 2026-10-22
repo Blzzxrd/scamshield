@@ -1,0 +1,9 @@
+{
+  "id": "wrong_number_investment",
+  "channel": "Text",
+  "sender": "+1 (555) 010-0241",
+  "subject": "A new friend's trading tip",
+  "body": "We've been chatting since I texted the wrong number last week. I can show you the trading app I use. Start with $100 at friendly-trades.example and I'll guide you.",
+  "isScam": true,
+  "explanation": "The friendly wrong-number conversation has turned into a request to deposit money at an unfamiliar site. Do not send money to someone you met through an unsolicited text."
+}

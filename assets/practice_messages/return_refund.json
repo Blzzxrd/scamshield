@@ -1,0 +1,9 @@
+{
+  "id": "return_refund",
+  "channel": "Email",
+  "sender": "Store Receipts <receipts@shop.example>",
+  "subject": "Your return has been refunded",
+  "body": "Your return of order #1842 was refunded to the original payment method. You can check the receipt in the store app. No reply is needed.",
+  "isScam": false,
+  "explanation": "This notice does not ask you to enter card details or claim a refund through a link. Check the store app you already use to verify the return."
+}

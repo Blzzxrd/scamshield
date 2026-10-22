@@ -1,0 +1,9 @@
+{
+  "id": "shared_grade_report",
+  "channel": "Email",
+  "sender": "Shared Docs <notify@campus-files.example>",
+  "subject": "Final grades shared with you",
+  "body": "Your instructor shared your final grade report. Sign in with your campus password at campus-files.example to view it.",
+  "isScam": true,
+  "explanation": "A shared-file invitation can be used to steal a password. This message sends you to an unverified sign-in site; check grades through your school's usual portal instead."
+}

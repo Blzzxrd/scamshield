@@ -1,0 +1,9 @@
+{
+  "id": "water_maintenance",
+  "channel": "Text",
+  "sender": "Town Water Service",
+  "subject": "Scheduled maintenance",
+  "body": "Scheduled water maintenance on Oak Street tomorrow, 9-11 AM. Service may pause briefly. No payment or reply is needed.",
+  "isScam": false,
+  "explanation": "This is a routine service notice. It asks for no money, personal details, or action through a link. You can verify the schedule on the utility's usual website if unsure."
+}

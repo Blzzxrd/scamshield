@@ -1,0 +1,9 @@
+{
+  "id": "class_waitlist",
+  "channel": "Email",
+  "sender": "Campus Registrar <registrar@campus.example>",
+  "subject": "A seat opened in Biology 102",
+  "body": "A seat opened in Biology 102. If you still want it, open the campus portal you normally use by Friday to confirm. This message does not include a sign-in link.",
+  "isScam": false,
+  "explanation": "A deadline by itself is not proof of a scam. This message directs you to the familiar campus portal without asking for a password, payment, or link click."
+}

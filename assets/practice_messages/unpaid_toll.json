@@ -1,0 +1,9 @@
+{
+  "id": "unpaid_toll",
+  "channel": "Text",
+  "sender": "Toll Services",
+  "subject": "Unpaid toll notice",
+  "body": "Final notice: You have an unpaid $6.40 toll. Pay today at toll-notice.example to avoid a registration hold.",
+  "isScam": true,
+  "explanation": "An unexpected fee, a rushed deadline, and an unfamiliar payment site are warning signs. Check the toll agency through a website or phone number you find yourself."
+}

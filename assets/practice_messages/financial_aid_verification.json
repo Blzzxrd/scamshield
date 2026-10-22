@@ -1,0 +1,9 @@
+{
+  "id": "financial_aid_verification",
+  "channel": "Email",
+  "sender": "Campus Aid Office <awards@student-aid-review.example>",
+  "subject": "Urgent aid verification",
+  "body": "Your financial aid award will be canceled tonight unless you upload a photo ID and bank details at student-aid-review.example.",
+  "isScam": true,
+  "explanation": "This message pressures you to submit sensitive information through an unfamiliar site. Open your school's usual financial aid portal or call the office using a number you already trust."
+}
