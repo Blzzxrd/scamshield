@@ -5,8 +5,6 @@ import 'screens/activity_pages.dart';
 import 'screens/text_simulation_page.dart';
 import 'services/progress_store.dart';
 import 'widgets/pixel_theme.dart';
-import 'widgets/pixel_world.dart';
-
 import 'screens/home_view.dart';
 import 'screens/learn_view.dart';
 import 'screens/practice_view.dart';
@@ -187,13 +185,14 @@ class _AppShellState extends State<AppShell> {
     );
   }
 
-  void _openTextSimulation() {
+  void _openTextSimulation(bool replayCompleted) {
     Navigator.push(
       context,
       MaterialPageRoute<void>(
         builder: (_) => TextSimulationPage(
           reviewedMessages: _progress!.reviewedMessages,
           onAnswered: (message, correct) => _reviewMessage(message.id, correct),
+          replayCompleted: replayCompleted,
         ),
       ),
     );
@@ -221,7 +220,7 @@ class _AppShellState extends State<AppShell> {
               lessons: lessons,
               practiceMessages: practiceMessages,
               onLearn: () => setState(() => _tab = 1),
-              onOpenTexts: _openTextSimulation,
+              onOpenTexts: () => _openTextSimulation(false),
               onOpenLesson: _openLesson,
             ),
           1 => LearnView(

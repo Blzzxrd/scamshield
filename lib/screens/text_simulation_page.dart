@@ -11,10 +11,12 @@ class TextSimulationPage extends StatefulWidget {
     super.key,
     required this.reviewedMessages,
     required this.onAnswered,
+    required this.replayCompleted,
   });
 
   final Set<String> reviewedMessages;
   final int Function(PracticeMessage message, bool correct) onAnswered;
+  final bool replayCompleted; //whether to include completed or not completed
 
   @override
   State<TextSimulationPage> createState() => _TextSimulationPageState();
@@ -36,7 +38,8 @@ class _TextSimulationPageState extends State<TextSimulationPage> {
     super.initState();
     _messagesFuture = ContentLoader.loadPracticeMessages().then((messages) {
       final filtered = messages
-          .where((message) => message.channel == 'Text')
+          .where((message) => message.channel == 'Text' &&
+        (widget.reviewedMessages.contains(message.id) == widget.replayCompleted)) //prevent old messages from recurring
           .toList()
           .reversed
           .toList();

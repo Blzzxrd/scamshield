@@ -17,7 +17,7 @@ class PracticeView extends StatefulWidget {
   final AppProgress progress;
   final List<PracticeMessage> practiceMessages;
   final ValueChanged<PracticeMessage> onOpenMessage;
-  final VoidCallback onOpenTextSimulation;
+  final ValueChanged<bool> onOpenTextSimulation;
   final VoidCallback onOpenCall;
 
   @override
@@ -92,7 +92,7 @@ class _PracticeViewState extends State<PracticeView> {
               subtitle:
                   '${pendingTexts.length} new text scenario(s) waiting for review.',
               button: 'Open phone',
-              onPressed: widget.onOpenTextSimulation,
+              onPressed: () => widget.onOpenTextSimulation(false),
             )
           else
             _buildEmptyState('All texts completed! Check the completed tab.'),
@@ -104,7 +104,7 @@ class _PracticeViewState extends State<PracticeView> {
               subtitle:
                   'You have reviewed ${completedTexts.length} text message(s).',
               button: 'Replay phone',
-              onPressed: widget.onOpenTextSimulation,
+              onPressed: () => widget.onOpenTextSimulation(true),
             )
           else
             _buildEmptyState('No completed text scenarios yet.'),

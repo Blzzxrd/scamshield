@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../data/content.dart';
 import '../services/progress_store.dart';
-import '../widgets/pixel_theme.dart';
 import '../widgets/shared_cards.dart';
 
 class LearnView extends StatelessWidget {
