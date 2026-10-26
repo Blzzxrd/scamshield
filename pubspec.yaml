@@ -22,6 +22,7 @@ flutter:
     - assets/lessons/
     - assets/practice_messages/
     - assets/call_paths/
+    - assets/art/kenney_pixel_platformer/
   uses-material-design: true
   fonts:
     - family: Silkscreen
