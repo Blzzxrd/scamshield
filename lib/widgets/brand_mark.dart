@@ -2,27 +2,27 @@ import 'package:flutter/material.dart';
 
 import 'pixel_theme.dart';
 
-/// A small version of the text-practice phone with a pixel shield in front.
-class PhoneShieldMark extends StatelessWidget {
-  const PhoneShieldMark({super.key, this.width = 64});
+/// A small version of the text-practice phone.
+class PhoneMark extends StatelessWidget {
+  const PhoneMark({super.key, this.width = 54});
 
   final double width;
 
   @override
   Widget build(BuildContext context) => SizedBox(
         width: width,
-        height: width * 70 / 64,
-        child: const CustomPaint(painter: _PhoneShieldPainter()),
+        height: width * 68 / 54,
+        child: const CustomPaint(painter: _PhonePainter()),
       );
 }
 
-class _PhoneShieldPainter extends CustomPainter {
-  const _PhoneShieldPainter();
+class _PhonePainter extends CustomPainter {
+  const _PhonePainter();
 
   @override
   void paint(Canvas canvas, Size size) {
     canvas.save();
-    canvas.scale(size.width / 64, size.height / 70);
+    canvas.scale(size.width / 54, size.height / 68);
 
     void block(double x, double y, double width, double height, Color color) {
       canvas.drawRect(
@@ -70,30 +70,6 @@ class _PhoneShieldPainter extends CustomPainter {
     block(12, 42, 24, 11, pixelMint);
     block(15, 45, 17, 2, pixelInk);
     block(15, 49, 12, 2, pixelMuted);
-
-    const shield = [
-      ' KKKKKKK ',
-      ' KYYYYYK ',
-      ' KYYYYYK ',
-      ' KYYYYYK ',
-      '  KYYYK  ',
-      '  KYYYK  ',
-      '   KYK   ',
-      '    K    ',
-    ];
-    for (var row = 0; row < shield.length; row++) {
-      for (var column = 0; column < shield[row].length; column++) {
-        final pixel = shield[row][column];
-        if (pixel == ' ') continue;
-        block(
-          36 + column * 3,
-          42 + row * 3,
-          3,
-          3,
-          pixel == 'K' ? pixelInk : pixelGold,
-        );
-      }
-    }
 
     canvas.restore();
   }

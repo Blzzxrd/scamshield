@@ -77,7 +77,11 @@ class Brand extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const PhoneShieldMark(width: 70),
+          // The gap between SCAM and SHIELD is 54 px from the wordmark's left edge.
+          const Padding(
+            padding: EdgeInsets.only(left: 24),
+            child: PhoneMark(width: 60),
+          ),
           const SizedBox(height: 6),
           Text(
             'SCAM SHIELD',
