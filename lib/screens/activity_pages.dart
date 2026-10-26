@@ -245,9 +245,6 @@ class _MessagePageState extends State<MessagePage> {
   }
 }
 
-
-
-
 class CallPage extends StatefulWidget {
   const CallPage({
     super.key,
@@ -270,17 +267,19 @@ class _CallPageState extends State<CallPage> {
   bool _finished = false;
   bool _answered = false;
   bool _isSpeaking = false;
+  double _speechRate = 0.75;
   final FlutterTts _tts = FlutterTts();
+  late final Future<void> _ttsReady;
 
   @override
   void initState() {
     super.initState();
     _nodeId = widget.scenario.startNode;
-    _initTts();
+    _ttsReady = _initTts();
   }
 
   Future<void> _initTts() async {
-    await _tts.setSpeechRate(0.72);
+    await _tts.setSpeechRate(_speechRate);
     await _tts.setPitch(1.65);
     await _tts.awaitSpeakCompletion(true);
     _tts.setStartHandler(() {
@@ -329,6 +328,9 @@ class _CallPageState extends State<CallPage> {
     if (!mounted) return;
     setState(() => _isSpeaking = true);
     try {
+      await _ttsReady;
+      if (!mounted) return;
+      await _tts.setSpeechRate(_speechRate);
       await _tts.speak(text);
     } finally {
       if (mounted) setState(() => _isSpeaking = false);
@@ -347,110 +349,173 @@ class _CallPageState extends State<CallPage> {
     final selected = _selected;
 
     return _ActivityScaffold(
-        title: widget.scenario.caller,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(30),
-              decoration: pixelPanel(_navy),
-              child: Column(
-                children: [
-                  Container(
-                    width: 68,
-                    height: 68,
-                    decoration: pixelPanel(pixelGold, shadow: false),
-                    child: const Icon(Icons.call, color: pixelInk, size: 34),
+      title: widget.scenario.caller,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(30),
+            decoration: pixelPanel(_navy),
+            child: Column(
+              children: [
+                Container(
+                  width: 68,
+                  height: 68,
+                  decoration: pixelPanel(pixelGold, shadow: false),
+                  child: const Icon(Icons.call, color: pixelInk, size: 34),
+                ),
+                const SizedBox(height: 14),
+                Text(
+                  widget.scenario.caller.toUpperCase(),
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: pixelCream,
+                    fontFamily: 'Silkscreen',
+                    fontSize: 22,
                   ),
-                  const SizedBox(height: 14),
-                  Text(
-                    widget.scenario.caller.toUpperCase(),
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: pixelCream,
-                      fontFamily: 'Silkscreen',
-                      fontSize: 22,
-                    ),
+                ),
+                const SizedBox(height: 5),
+                Text(
+                  _answered
+                      ? 'Connected · Simulation'
+                      : 'Incoming call · Simulation',
+                  style: const TextStyle(color: pixelMint),
+                ),
+                if (!_answered) ...[
+                  const SizedBox(height: 24),
+                  FilledButton.icon(
+                    onPressed: _isSpeaking ? null : _answerCall,
+                    icon: const Icon(Icons.call),
+                    label: const Text('Answer call'),
                   ),
-                  const SizedBox(height: 5),
-                  Text(
-                    _answered
-                        ? 'Connected · Simulation'
-                        : 'Incoming call · Simulation',
-                    style: const TextStyle(color: pixelMint),
-                  ),
-                  if (!_answered) ...[
-                    const SizedBox(height: 24),
-                    FilledButton.icon(
-                      onPressed: _isSpeaking ? null : _answerCall,
-                      icon: const Icon(Icons.call),
-                      label: const Text('Answer call'),
-                    ),
-                  ],
                 ],
-              ),
+              ],
             ),
-            if (_answered) ...[
+          ),
+          const SizedBox(height: 18),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.fromLTRB(18, 16, 18, 12),
+            decoration: pixelPanel(pixelCream),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Icon(Icons.record_voice_over_outlined,
+                        color: pixelInk, size: 22),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text('VOICE SPEED', style: pixelHeading(16)),
+                    ),
+                    Text('${_speechRate.toStringAsFixed(2)}×',
+                        style: pixelHeading(15)),
+                  ],
+                ),
+                Slider(
+                  value: _speechRate,
+                  min: 0.5,
+                  max: 1.5,
+                  divisions: 20,
+                  label: '${_speechRate.toStringAsFixed(2)}×',
+                  activeColor: pixelPurple,
+                  inactiveColor: pixelMint,
+                  semanticFormatterCallback: (value) =>
+                      'Voice speed ${value.toStringAsFixed(2)} times normal',
+                  onChanged: (value) => setState(() => _speechRate = value),
+                ),
+                const Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('SLOWER',
+                        style: TextStyle(
+                          fontFamily: 'Silkscreen',
+                          fontSize: 11,
+                          color: pixelMuted,
+                        )),
+                    Text('FASTER',
+                        style: TextStyle(
+                          fontFamily: 'Silkscreen',
+                          fontSize: 11,
+                          color: pixelMuted,
+                        )),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                const Text('Applies to the next spoken line.',
+                    style: TextStyle(color: pixelMuted, fontSize: 13)),
+                if (_answered) ...[
+                  const SizedBox(height: 10),
+                  TextButton.icon(
+                    onPressed:
+                        _isSpeaking ? null : () => _speak(node.callerLine),
+                    icon: const Icon(Icons.replay_rounded),
+                    label: const Text('Replay caller line'),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          if (_answered) ...[
+            const SizedBox(height: 24),
+            _NoteCard(
+              icon: Icons.record_voice_over_outlined,
+              title: widget.scenario.caller,
+              text: '“${node.callerLine}”',
+            ),
+            if (_finished && selected != null) ...[
               const SizedBox(height: 24),
               _NoteCard(
-                icon: Icons.record_voice_over_outlined,
-                title: widget.scenario.caller,
-                text: '“${node.callerLine}”',
+                icon: selected.safeEnding
+                    ? Icons.check_circle_outline
+                    : Icons.info_outline,
+                title:
+                    selected.safeEnding ? 'Safe choice' : 'Try a safer route',
+                text: '${selected.explanation ?? ''}'
+                    '${selected.safeEnding && !widget.alreadyCompleted ? ' +20 XP' : ''}',
               ),
-              if (_finished && selected != null) ...[
-                const SizedBox(height: 24),
-                _NoteCard(
-                  icon: selected.safeEnding
-                      ? Icons.check_circle_outline
-                      : Icons.info_outline,
-                  title: selected.safeEnding
-                      ? 'Safe choice'
-                      : 'Try a safer route',
-                  text: '${selected.explanation ?? ''}'
-                      '${selected.safeEnding && !widget.alreadyCompleted ? ' +20 XP' : ''}',
+              const SizedBox(height: 20),
+              FilledButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Finish simulation'),
+              ),
+            ] else if (selected != null) ...[
+              const SizedBox(height: 16),
+              _NoteCard(
+                icon: Icons.chat_bubble_outline,
+                title: 'You ask',
+                text: selected.question,
+              ),
+              const SizedBox(height: 12),
+              _NoteCard(
+                icon: Icons.record_voice_over_outlined,
+                title: 'Caller replies',
+                text: selected.response,
+              ),
+              const SizedBox(height: 20),
+              FilledButton(
+                onPressed: _isSpeaking ? null : _continue,
+                child: const Text('Continue'),
+              ),
+            ] else ...[
+              const SizedBox(height: 25),
+              Text('CHOOSE A QUESTION', style: pixelHeading(21)),
+              const SizedBox(height: 14),
+              for (final choice in node.choices) ...[
+                _ChoiceButton(
+                  text: choice.question,
+                  selected: false,
+                  disabled: false,
+                  onPressed: () => _choose(choice),
                 ),
-                const SizedBox(height: 20),
-                FilledButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('Finish simulation'),
-                ),
-              ] else if (selected != null) ...[
-                const SizedBox(height: 16),
-                _NoteCard(
-                  icon: Icons.chat_bubble_outline,
-                  title: 'You ask',
-                  text: selected.question,
-                ),
-                const SizedBox(height: 12),
-                _NoteCard(
-                  icon: Icons.record_voice_over_outlined,
-                  title: 'Caller replies',
-                  text: selected.response,
-                ),
-                const SizedBox(height: 20),
-                FilledButton(
-                  onPressed: _isSpeaking ? null : _continue,
-                  child: const Text('Continue'),
-                ),
-              ] else ...[
-                const SizedBox(height: 25),
-                Text('CHOOSE A QUESTION', style: pixelHeading(21)),
-                const SizedBox(height: 14),
-                for (final choice in node.choices) ...[
-                  _ChoiceButton(
-                    text: choice.question,
-                    selected: false,
-                    disabled: false,
-                    onPressed: () => _choose(choice),
-                  ),
-                  const SizedBox(height: 10),
-                ],
-              ]
-            ],
+                const SizedBox(height: 10),
+              ],
+            ]
           ],
-        ),
-      );
+        ],
+      ),
+    );
   }
 }
 
