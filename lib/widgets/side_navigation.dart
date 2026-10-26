@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'brand_mark.dart';
 import 'pixel_theme.dart';
 
 class SideNavigation extends StatelessWidget {
@@ -27,7 +28,7 @@ class SideNavigation extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Brand(onDark: true),
-          const SizedBox(height: 56),
+          const SizedBox(height: 34),
           for (var i = 0; i < items.length; i++)
             Padding(
               padding: const EdgeInsets.only(bottom: 8),
@@ -72,22 +73,18 @@ class Brand extends StatelessWidget {
   final bool onDark;
 
   @override
-  Widget build(BuildContext context) => Row(
+  Widget build(BuildContext context) => Column(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: pixelPanel(pixelGold, shadow: false),
-            child: const Icon(Icons.shield_rounded, color: pixelInk, size: 24),
-          ),
-          const SizedBox(width: 10),
+          const PhoneShieldMark(width: 70),
+          const SizedBox(height: 6),
           Text(
-            'ScamShield',
+            'SCAM SHIELD',
             style: TextStyle(
               fontFamily: 'Silkscreen',
               color: onDark ? pixelCream : pixelInk,
-              fontSize: 17,
+              fontSize: 16,
             ),
           ),
         ],

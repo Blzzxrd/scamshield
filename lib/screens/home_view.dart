@@ -48,7 +48,7 @@ class HomeView extends StatelessWidget {
       children: [
         if (MediaQuery.sizeOf(context).width < 900) ...[
           const Brand(),
-          const SizedBox(height: 30),
+          const SizedBox(height: 18),
         ],
         const Text(
           'WELCOME, DEFENDER',
